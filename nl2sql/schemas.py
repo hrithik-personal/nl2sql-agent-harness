@@ -29,7 +29,9 @@ class TableCard(BaseModel):
     table: str
     columns: list[ColumnInfo] = Field(default_factory=list)
     primary_key: list[str] = Field(default_factory=list)
-    foreign_keys: list[dict[str, str]] = Field(default_factory=list)  # {column, ref_table, ref_column}
+    foreign_keys: list[dict[str, str]] = Field(
+        default_factory=list
+    )  # {column, ref_table, ref_column}
     sample_values: dict[str, list[str]] = Field(default_factory=dict)
 
     def to_card_text(self) -> str:
@@ -38,7 +40,8 @@ class TableCard(BaseModel):
         pk = ", ".join(self.primary_key) or "-"
         fks = (
             "; ".join(
-                f"{fk['column']} -> {fk['ref_table']}.{fk['ref_column']}" for fk in self.foreign_keys
+                f"{fk['column']} -> {fk['ref_table']}.{fk['ref_column']}"
+                for fk in self.foreign_keys
             )
             or "-"
         )
@@ -160,7 +163,9 @@ class RunState(BaseModel):
     plan: Plan | None = None
 
     sql_drafts: Annotated[list[SQLDraft], operator.add] = Field(default_factory=list)
-    exec_results: Annotated[list[ExecResult | ExecError], operator.add] = Field(default_factory=list)
+    exec_results: Annotated[list[ExecResult | ExecError], operator.add] = Field(
+        default_factory=list
+    )
     verdicts: Annotated[list[Verdict], operator.add] = Field(default_factory=list)
 
     retry_count: int = 0

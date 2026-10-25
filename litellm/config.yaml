@@ -1,0 +1,31 @@
+# LiteLLM proxy config.
+# Per-agent model routing: the Planner/Verifier get a stronger model, the
+# Writer/Explainer a cheaper/faster one. Swap model ids for whatever you have
+# access to. (Phase 2 adds per-agent virtual keys with budgets via the proxy DB;
+# for Phase 1 point all four LITELLM_KEY_* at the master_key below.)
+
+model_list:
+  - model_name: planner-model
+    litellm_params:
+      model: anthropic/claude-sonnet-4-5
+  - model_name: verifier-model
+    litellm_params:
+      model: anthropic/claude-sonnet-4-5
+  - model_name: writer-model
+    litellm_params:
+      model: anthropic/claude-haiku-4-5
+  - model_name: explainer-model
+    litellm_params:
+      model: anthropic/claude-haiku-4-5
+
+litellm_settings:
+  drop_params: true
+  # Provider fallback (Claude -> OpenAI) for cascading-failure handling.
+  fallbacks:
+    - planner-model: ["gpt-4o"]
+    - verifier-model: ["gpt-4o"]
+    - writer-model: ["gpt-4o-mini"]
+    - explainer-model: ["gpt-4o-mini"]
+
+general_settings:
+  master_key: sk-local-master

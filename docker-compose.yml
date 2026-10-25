@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: ${PG_APP_USER:-nl2sql_app}
+      POSTGRES_PASSWORD: ${PG_APP_PASSWORD:-nl2sql_app_pw}
+      POSTGRES_DB: ${PG_DB:-nl2sql}
+      # consumed by db/02_roles.sh to create the read-only sandbox role
+      PG_RO_USER: ${PG_RO_USER:-analyst_ro}
+      PG_RO_PASSWORD: ${PG_RO_PASSWORD:-analyst_ro_pw}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # *.sql and *.sh here run once at first init (alphabetical); .py/.jsonl ignored
+      - ./db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_APP_USER:-nl2sql_app} -d ${PG_DB:-nl2sql}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  litellm:
+    image: ghcr.io/berriai/litellm:main-latest
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./litellm/config.yaml:/app/config.yaml:ro
+
+  phoenix:
+    image: arizephoenix/phoenix:latest
+    ports:
+      - "6006:6006"   # UI + OTLP/HTTP collector
+
+volumes:
+  pgdata:

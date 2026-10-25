@@ -16,8 +16,14 @@ from sqlglot import exp
 
 # Any of these appearing anywhere in the tree means "not a pure read".
 _FORBIDDEN = (
-    exp.Insert, exp.Update, exp.Delete, exp.Merge,
-    exp.Drop, exp.Create, exp.Alter, exp.TruncateTable,
+    exp.Insert,
+    exp.Update,
+    exp.Delete,
+    exp.Merge,
+    exp.Drop,
+    exp.Create,
+    exp.Alter,
+    exp.TruncateTable,
     exp.Command,  # SET/CALL/VACUUM/GRANT and other non-query statements
 )
 
@@ -25,8 +31,8 @@ _FORBIDDEN = (
 @dataclass
 class GuardResult:
     ok: bool
-    sql: str = ""            # cleaned SQL (LIMIT injected) when ok
-    error_type: str = ""     # invalid_sql | forbidden
+    sql: str = ""  # cleaned SQL (LIMIT injected) when ok
+    error_type: str = ""  # invalid_sql | forbidden
     message: str = ""
     tables: tuple[str, ...] = ()
 
@@ -47,7 +53,8 @@ def validate_select(
 
     if len(statements) != 1:
         return GuardResult(
-            False, error_type="forbidden",
+            False,
+            error_type="forbidden",
             message=f"expected exactly one statement, got {len(statements)}",
         )
 
@@ -57,7 +64,8 @@ def validate_select(
     for node in root.walk():
         if isinstance(node, _FORBIDDEN):
             return GuardResult(
-                False, error_type="forbidden",
+                False,
+                error_type="forbidden",
                 message=f"non-SELECT statement is not allowed ({type(node).__name__})",
             )
 
@@ -65,7 +73,8 @@ def validate_select(
     query = root.this if isinstance(root, exp.With) else root
     if not isinstance(query, (exp.Select, exp.Union, exp.Subquery)):
         return GuardResult(
-            False, error_type="forbidden",
+            False,
+            error_type="forbidden",
             message=f"top-level statement must be a SELECT (got {type(root).__name__})",
         )
 
@@ -78,16 +87,21 @@ def validate_select(
         unknown = [t for t in tables if t not in allowed_tables]
         if unknown:
             return GuardResult(
-                False, error_type="invalid_sql",
-                message=f"unknown table(s): {', '.join(unknown)}", tables=tables,
+                False,
+                error_type="invalid_sql",
+                message=f"unknown table(s): {', '.join(unknown)}",
+                tables=tables,
             )
 
     # Inject LIMIT when missing (best effort; executor also hard-caps the fetch).
     try:
         if isinstance(root, exp.Select) and not root.args.get("limit"):
             root = root.limit(max_rows)
-        elif isinstance(root, exp.With) and isinstance(root.this, exp.Select) \
-                and not root.this.args.get("limit"):
+        elif (
+            isinstance(root, exp.With)
+            and isinstance(root.this, exp.Select)
+            and not root.this.args.get("limit")
+        ):
             root.set("this", root.this.limit(max_rows))
     except Exception:  # noqa: BLE001 - limit injection is non-critical
         pass

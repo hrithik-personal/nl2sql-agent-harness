@@ -80,11 +80,11 @@ class Orchestrator(abc.ABC):
         self.deps = deps
 
     @abc.abstractmethod
-    def run(self, question: str, thread_id: str | None = None) -> "RunResult":
+    def run(self, question: str, thread_id: str | None = None) -> RunResult:
         """Run the pipeline for one question (fresh run)."""
 
     @abc.abstractmethod
-    def resume(self, thread_id: str, answer: str) -> "RunResult":
+    def resume(self, thread_id: str, answer: str) -> RunResult:
         """Resume a run that paused on a clarifying question."""
 
 

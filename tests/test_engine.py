@@ -62,8 +62,12 @@ def explainer(_q, _sql, _result, _verdict):
 
 def _deps(**over):
     base = dict(
-        retriever=retriever, planner=planner_ok, writer=writer,
-        executor=executor_ok, verifier=verifier_ok, explainer=explainer,
+        retriever=retriever,
+        planner=planner_ok,
+        writer=writer,
+        executor=executor_ok,
+        verifier=verifier_ok,
+        explainer=explainer,
     )
     base.update(over)
     return Deps(**base)
@@ -98,7 +102,7 @@ def test_self_correction_loop():
     eng = LangGraphEngine(_deps(executor=flaky_executor, verifier=verifier))
     res = eng.run("how many orders?")
     assert res.state.retry_count == 1
-    assert len(res.state.sql_drafts) == 2          # reducer appended both attempts
+    assert len(res.state.sql_drafts) == 2  # reducer appended both attempts
     assert len(res.state.exec_results) == 2
     assert res.state.answer.text == "There are 42 orders."
 

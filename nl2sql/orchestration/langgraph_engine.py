@@ -47,8 +47,10 @@ class LangGraphEngine(Orchestrator):
     def _retrieve(self, state: RunState) -> dict:
         t0 = time.perf_counter()
         ctx = self.deps.retriever(state.question)
-        return {"retrieved": ctx, "trace": [_step("retriever", "retrieve", t0,
-                                                   tables=[t.table for t in ctx.tables])]}
+        return {
+            "retrieved": ctx,
+            "trace": [_step("retriever", "retrieve", t0, tables=[t.table for t in ctx.tables])],
+        }
 
     def _plan(self, state: RunState) -> dict:
         t0 = time.perf_counter()
@@ -73,23 +75,30 @@ class LangGraphEngine(Orchestrator):
         t0 = time.perf_counter()
         critique = state.last_verdict.critique if state.last_verdict else None
         draft, usage = self.deps.writer(state.plan, state.retrieved, critique)
-        return {"sql_drafts": [draft], "trace": [_step("writer", "write", t0, usage=usage,
-                                                       sql=draft.sql)]}
+        return {
+            "sql_drafts": [draft],
+            "trace": [_step("writer", "write", t0, usage=usage, sql=draft.sql)],
+        }
 
     def _execute(self, state: RunState) -> dict:
         t0 = time.perf_counter()
         allowed = {t.table for t in state.retrieved.tables} if state.retrieved else set()
         result = self.deps.executor(state.last_sql.sql, allowed)
         status = "error" if isinstance(result, ExecError) else "ok"
-        return {"exec_results": [result], "trace": [_step("executor", "execute", t0, status=status)]}
+        return {
+            "exec_results": [result],
+            "trace": [_step("executor", "execute", t0, status=status)],
+        }
 
     def _verify(self, state: RunState) -> dict:
         t0 = time.perf_counter()
         verdict, usage = self.deps.verifier(
             state.question, state.plan, state.last_sql.sql, state.last_exec
         )
-        out: dict = {"verdicts": [verdict], "trace": [_step("verifier", "verify", t0, usage=usage,
-                                                            status=verdict.status)]}
+        out: dict = {
+            "verdicts": [verdict],
+            "trace": [_step("verifier", "verify", t0, usage=usage, status=verdict.status)],
+        }
         if verdict.status == "retry":
             out["retry_count"] = state.retry_count + 1
         return out
@@ -104,7 +113,10 @@ class LangGraphEngine(Orchestrator):
         if result is None:
             ans = Answer(
                 text="I couldn't produce a query I was confident in for that question.",
-                confidence=0.2, sql=sql, cost_usd=total_cost, low_confidence=True,
+                confidence=0.2,
+                sql=sql,
+                cost_usd=total_cost,
+                low_confidence=True,
             )
             return {"answer": ans, "trace": [_step("explainer", "explain", t0, status="low_conf")]}
 
@@ -121,7 +133,11 @@ class LangGraphEngine(Orchestrator):
         verdict = state.last_verdict
         if verdict and verdict.status == "ok":
             return "explain"
-        if verdict and verdict.status == "retry" and state.retry_count <= self.deps.settings.max_retries:
+        if (
+            verdict
+            and verdict.status == "retry"
+            and state.retry_count <= self.deps.settings.max_retries
+        ):
             return "write"
         return "explain"  # abort or budget exhausted -> graceful low-confidence answer
 
@@ -140,8 +156,9 @@ class LangGraphEngine(Orchestrator):
         g.add_edge("plan", "write")
         g.add_edge("write", "execute")
         g.add_edge("execute", "verify")
-        g.add_conditional_edges("verify", self._route_after_verify,
-                                {"write": "write", "explain": "explain"})
+        g.add_conditional_edges(
+            "verify", self._route_after_verify, {"write": "write", "explain": "explain"}
+        )
         g.add_edge("explain", END)
         return g.compile(checkpointer=self.checkpointer)
 
@@ -154,12 +171,17 @@ class LangGraphEngine(Orchestrator):
         for task in snap.tasks:
             if getattr(task, "interrupts", None):
                 q = task.interrupts[0].value
-                return RunResult(state=RunState(**snap.values), interrupted=True,
-                                 clarifying_question=q, thread_id=thread_id)
+                return RunResult(
+                    state=RunState(**snap.values),
+                    interrupted=True,
+                    clarifying_question=q,
+                    thread_id=thread_id,
+                )
         return RunResult(state=RunState(**snap.values), thread_id=thread_id)
 
     def run(self, question: str, thread_id: str | None = None) -> RunResult:
         import uuid
+
         tid = thread_id or uuid.uuid4().hex
         self.app.invoke(RunState(question=question), self._config(tid))
         return self._finish(tid)
