@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Env / secrets
+.env
+*.local
+
+# Models / caches
+.cache/
+models/
+
+# OS
+.DS_Store
+
+# Data dumps
+*.pgdata/
