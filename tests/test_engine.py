@@ -121,6 +121,25 @@ def test_retry_budget_exhausted_gives_low_confidence():
     assert len(res.state.sql_drafts) == 3
 
 
+def test_wallclock_budget_aborts_gracefully():
+    from nl2sql.config import Settings
+
+    def always_error(_sql, _allowed):
+        return ExecError(error_type="db_error", message="boom")
+
+    def verifier(_q, _plan, _sql, _result):
+        return Verdict(status="retry", critique="again"), LLMUsage()
+
+    # zero budget + high retry cap => the wall-clock guard (not the retry cap) stops the loop
+    settings = Settings(max_wallclock_seconds=0, max_retries=10)
+    deps = _deps(executor=always_error, verifier=verifier)
+    deps.settings = settings
+    eng = LangGraphEngine(deps)
+    res = eng.run("slow question")
+    assert res.state.answer.low_confidence
+    assert len(res.state.sql_drafts) == 1  # stopped before any retry
+
+
 def test_clarify_interrupt_and_resume():
     eng = LangGraphEngine(_deps(planner=planner_needs_clar))
     res = eng.run("show me orders", thread_id="t1")

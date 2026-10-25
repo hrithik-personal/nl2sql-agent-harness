@@ -1,0 +1,40 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: nl2sql_app
+          POSTGRES_PASSWORD: nl2sql_app_pw
+          POSTGRES_DB: nl2sql
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U nl2sql_app -d nl2sql"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      LLM_MODE: replay            # cassettes -> no API key needed in CI
+      PIP_INDEX_URL: https://pypi.org/simple/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: install
+        run: |
+          python -m pip install -e ".[dev]"
+      - name: lint
+        run: ruff check .
+      - name: unit tests (cassette replay)
+        run: pytest -q
+      # The DB-backed eval harness runs once the gold-SQL cassettes are recorded.
+      # Enable by initialising the DB (db/*.sql + seed + index) and uncommenting:
+      # - name: evals (gated)
+      #   run: LLM_MODE=replay EVAL_THRESHOLD=0.7 python -m evals.run_evals

@@ -18,10 +18,14 @@ import time
 
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
-from langgraph.types import Command, interrupt
+from langgraph.types import Command, RetryPolicy, interrupt
 
 from nl2sql.orchestration.base import Deps, Orchestrator, RunResult
 from nl2sql.schemas import Answer, ExecError, ExecResult, RunState, TraceStep
+
+# retry transient LLM/node exceptions with backoff (distinct from the semantic
+# Writer<->Verifier retry, which is a conditional edge)
+LLM_RETRY = RetryPolicy(max_attempts=3, backoff_factor=2.0)
 
 
 def _step(agent: str, name: str, t0: float, status: str = "ok", usage=None, **detail) -> TraceStep:
@@ -49,6 +53,7 @@ class LangGraphEngine(Orchestrator):
         ctx = self.deps.retriever(state.question)
         return {
             "retrieved": ctx,
+            "started_at": time.perf_counter(),  # anchor for the wall-clock budget
             "trace": [_step("retriever", "retrieve", t0, tables=[t.table for t in ctx.tables])],
         }
 
@@ -129,6 +134,11 @@ class LangGraphEngine(Orchestrator):
         return {"answer": ans, "trace": [_step("explainer", "explain", t0, usage=usage)]}
 
     # --- routing -------------------------------------------------------- #
+    def _over_budget(self, state: RunState) -> bool:
+        if state.started_at is None:
+            return False
+        return (time.perf_counter() - state.started_at) > self.deps.settings.max_wallclock_seconds
+
     def _route_after_verify(self, state: RunState) -> str:
         verdict = state.last_verdict
         if verdict and verdict.status == "ok":
@@ -137,6 +147,7 @@ class LangGraphEngine(Orchestrator):
             verdict
             and verdict.status == "retry"
             and state.retry_count <= self.deps.settings.max_retries
+            and not self._over_budget(state)
         ):
             return "write"
         return "explain"  # abort or budget exhausted -> graceful low-confidence answer
@@ -145,11 +156,12 @@ class LangGraphEngine(Orchestrator):
     def _build(self):
         g = StateGraph(RunState)
         g.add_node("retrieve", self._retrieve)
-        g.add_node("plan", self._plan)
-        g.add_node("write", self._write)
+        # LLM nodes get a transient-error RetryPolicy (backoff); execute/retrieve don't
+        g.add_node("plan", self._plan, retry_policy=LLM_RETRY)
+        g.add_node("write", self._write, retry_policy=LLM_RETRY)
         g.add_node("execute", self._execute)
-        g.add_node("verify", self._verify)
-        g.add_node("explain", self._explain)
+        g.add_node("verify", self._verify, retry_policy=LLM_RETRY)
+        g.add_node("explain", self._explain, retry_policy=LLM_RETRY)
 
         g.add_edge(START, "retrieve")
         g.add_edge("retrieve", "plan")

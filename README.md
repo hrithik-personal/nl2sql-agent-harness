@@ -15,8 +15,15 @@ Planner → Writer → Executor(sandbox) → Verifier → (retry ↺) → Explai
 ```
 
 ## Status
-Phase 1 (core) in progress. Verified so far: SQL-safety guard, LangGraph orchestration engine
-(happy path, self-correction loop, retry budget, clarify interrupt/resume).
+Phases 1–2 implemented. **27 tests green, ruff clean** (verified without external services via
+fakes + the execution-match comparator):
+- SQL-safety guard (single-SELECT, CTE-hidden-DML rejection, LIMIT injection)
+- LangGraph engine: happy path, self-correction loop, retry budget, **wall-clock budget**, clarify interrupt/resume
+- execution-match comparator; tool permission matrix
+
+Written and wired, pending a live DB + API key to run end-to-end: agents, pgvector retriever,
+DB-side of the sandbox executor, FastAPI, Streamlit, MCP server (stdio + HTTP), eval harness,
+`docker-compose`, LiteLLM routing/fallback, OTel→Phoenix. See [`docs/FAILURE_MODES.md`](docs/FAILURE_MODES.md).
 
 ## Quickstart
 ```bash

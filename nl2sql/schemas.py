@@ -169,6 +169,7 @@ class RunState(BaseModel):
     verdicts: Annotated[list[Verdict], operator.add] = Field(default_factory=list)
 
     retry_count: int = 0
+    started_at: float | None = None  # perf_counter at run start; for the wall-clock budget
     trace: Annotated[list[TraceStep], operator.add] = Field(default_factory=list)
 
     answer: Answer | None = None

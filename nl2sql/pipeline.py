@@ -26,8 +26,29 @@ def build_default_deps() -> Deps:
     )
 
 
+def _make_checkpointer():
+    """Durable checkpointer for interrupts/resume across restarts.
+
+    CHECKPOINTER=postgres uses LangGraph's PostgresSaver (app schema); otherwise
+    the engine falls back to in-memory (fine for a single process / tests).
+    """
+    import os
+
+    if os.getenv("CHECKPOINTER", "memory").lower() != "postgres":
+        return None
+    from langgraph.checkpoint.postgres import PostgresSaver
+
+    from nl2sql.config import get_settings
+
+    saver = PostgresSaver.from_conn_string(get_settings().app_dsn())
+    saver.setup()
+    return saver
+
+
 def build_engine(deps: Deps | None = None, checkpointer=None) -> LangGraphEngine:
-    return LangGraphEngine(deps or build_default_deps(), checkpointer=checkpointer)
+    return LangGraphEngine(
+        deps or build_default_deps(), checkpointer=checkpointer or _make_checkpointer()
+    )
 
 
 def to_agent_result(res: RunResult) -> AgentResult:
