@@ -1,4 +1,4 @@
-.PHONY: help venv up down seed index api run mcp eval test lint fmt
+.PHONY: help venv up down seed index api run mcp eval test lint fmt litellm-db litellm-keys
 
 PY ?= .venv/bin/python
 PIP ?= .venv/bin/pip
@@ -33,6 +33,15 @@ mcp: ## run the MCP server over stdio
 
 mcp-http: ## run the MCP server over Streamable HTTP
 	MCP_TRANSPORT=http $(PY) -m mcp_server.server
+
+litellm-db: ## create the `litellm` database (only needed on a pre-existing pg volume)
+	docker compose exec -T postgres psql -U $${PG_APP_USER:-nl2sql_app} -d $${PG_DB:-nl2sql} \
+	  -tc "SELECT 1 FROM pg_database WHERE datname='litellm'" | grep -q 1 \
+	  || docker compose exec -T postgres psql -U $${PG_APP_USER:-nl2sql_app} -d $${PG_DB:-nl2sql} \
+	       -c "CREATE DATABASE litellm OWNER $${PG_APP_USER:-nl2sql_app};"
+
+litellm-keys: ## mint 1 budgeted virtual key per agent + write them to .env
+	$(PY) scripts/provision_litellm_keys.py
 
 eval: ## run the eval harness (cassette replay) -> scorecard
 	LLM_MODE=replay $(PY) -m evals.run_evals

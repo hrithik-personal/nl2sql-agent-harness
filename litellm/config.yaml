@@ -1,8 +1,12 @@
 # LiteLLM proxy config.
 # Per-agent model routing: the Planner/Verifier get a stronger model, the
 # Writer/Explainer a cheaper/faster one. Swap model ids for whatever you have
-# access to. (Phase 2 adds per-agent virtual keys with budgets via the proxy DB;
-# for Phase 1 point all four LITELLM_KEY_* at the master_key below.)
+# access to.
+# The proxy runs DB-backed (DATABASE_URL in docker-compose.yml), which unlocks
+# the admin UI plus a budgeted, model-scoped virtual key per agent. Mint them
+# with `make litellm-keys`; each key is restricted to its own model alias (+ its
+# fallback target) and carries a 30-day budget, so spend is tracked per agent and
+# a key can't call another agent's model.
 
 model_list:
   - model_name: planner-model

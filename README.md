@@ -33,7 +33,8 @@ Remaining: Phase 3 stretch (hand-written engine, agentic-RAG toggle, LLM-as-judg
 ## Quickstart
 ```bash
 cp .env.example .env            # add ANTHROPIC_API_KEY
-docker compose up -d            # Postgres (shop+app) + LiteLLM + Phoenix
+docker compose up -d            # Postgres (shop+app+litellm) + LiteLLM + Phoenix
+make litellm-keys               # mint 1 budgeted, model-scoped virtual key per agent → .env
 make seed                       # deterministic Faker data
 make index                      # schema catalog + embeddings (pgvector)
 make api                        # FastAPI  → localhost:8000
@@ -41,3 +42,23 @@ make run                        # Streamlit → localhost:8501
 make eval                       # eval harness → scorecard
 make test                       # unit + cassette-replayed tests
 ```
+
+## Observability & cost
+Two dashboards come up with the stack:
+
+- **LiteLLM admin UI — http://localhost:4000/ui** (login `admin` / your `LITELLM_MASTER_KEY`).
+  The proxy runs DB-backed, so each agent has its own **virtual key** with a **30-day
+  budget** and is **scoped to only its model** (the planner's key is rejected from the
+  writer's model). Per-key spend, request counts and a per-model leaderboard are tracked
+  live.
+- **Arize Phoenix — http://localhost:6006.** Every live run emits an OTel trace: a parent
+  `nl2sql.run` span with one span per agent node, LiteLLM `completion` spans (tokens/cost)
+  nested under each. (Replay/eval/CI make no LLM calls, so they emit no traces — by design.)
+
+| LiteLLM: per-agent virtual keys | LiteLLM: gateway overview | Phoenix: trace waterfall |
+|---|---|---|
+| ![virtual keys](docs/assets/litellm-virtual-keys.png) | ![dashboard](docs/assets/litellm-dashboard.png) | ![trace](docs/assets/phoenix-trace-waterfall.png) |
+
+> On a **pre-existing** Postgres volume the `litellm` database isn't auto-created; run
+> `make litellm-db` once before `make litellm-keys`. A fresh `docker compose up` creates it
+> automatically (`db/00_litellm_db.sql`).

@@ -26,10 +26,18 @@ services:
     environment:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      # DB-backed mode: unlocks the admin UI, virtual keys, per-key budgets and
+      # spend tracking. Prisma auto-migrates into the `litellm` database on boot
+      # (created by db/00_litellm_db.sql on the shared Postgres).
+      DATABASE_URL: postgresql://${PG_APP_USER:-nl2sql_app}:${PG_APP_PASSWORD:-nl2sql_app_pw}@postgres:5432/litellm
+      STORE_MODEL_IN_DB: "True"
     ports:
       - "4000:4000"
     volumes:
       - ./litellm/config.yaml:/app/config.yaml:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   phoenix:
     image: arizephoenix/phoenix:latest
