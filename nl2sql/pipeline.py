@@ -14,10 +14,13 @@ from nl2sql.schemas import AgentResult
 
 def build_default_deps() -> Deps:
     from nl2sql.executor import SandboxExecutor
+    from nl2sql.retrieval_cache import RetrievalCassette
     from nl2sql.retrieve import PgVectorRetriever
 
     return Deps(
-        retriever=PgVectorRetriever(),
+        # record/replay the retrieved context so offline runs are deterministic on
+        # any machine (the inner pgvector retriever is built lazily — never in replay)
+        retriever=RetrievalCassette(lambda: PgVectorRetriever()),
         planner=planner.plan,
         writer=writer.write,
         executor=SandboxExecutor(),
