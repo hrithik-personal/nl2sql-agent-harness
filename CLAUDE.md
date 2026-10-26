@@ -21,6 +21,7 @@ Package: `nl2sql`. Python 3.11+.
 | Change how the graph runs (nodes, edges, retries, budgets) | `nl2sql/orchestration/langgraph_engine.py` |
 | Change what an agent does / its prompt | `nl2sql/agents/{planner,writer,verifier,explainer}.py` |
 | Change how a model is called, routed, or costed | `nl2sql/llm.py` (the **only** place that calls an LLM) |
+| Change how retrieval is recorded/replayed | `nl2sql/retrieval_cache.py` (pins the retrieved context offline) |
 | Change SQL safety rules | `nl2sql/sqlguard.py` (AST) and `nl2sql/executor.py` (runtime) |
 | Change retrieval / schema linking | `nl2sql/retrieve.py`, `nl2sql/catalog.py` |
 | Add/alter typed state or settings | `nl2sql/schemas.py`, `nl2sql/config.py` |
@@ -46,8 +47,11 @@ the LangGraph dependency lives only in the orchestration layer, behind the `Orch
    context, or model ids **changes those hashes and breaks replay**. If you change any of them, you must
    **re-record cassettes** (see below). Sources of determinism already in place — keep them:
    - `temperature=0` on every call; fixed Faker seed (`SEED=42`); deterministic `ORDER BY` injected by
-     the SQL guard; retrieval ranking forced exact (index scans disabled) with tiebreak ordering;
-     **occurrence-indexed** cassettes (the loop can issue the same prompt twice per run).
+     the SQL guard; **occurrence-indexed** LLM cassettes (the loop can issue the same prompt twice per run).
+   - **Pinned retrieval** (`retrieval_cache.py`): embedding ranking is machine-sensitive, so in
+     record/replay the retrieved context is frozen to a fixture (`tests/cassettes/retrieval/`) and served
+     verbatim. This is why offline replay needs *neither the embedding model nor pgvector* and is
+     identical across machines. Don't reintroduce live embedding calls into the replay path.
 
 3. **The SQL sandbox is defense-in-depth — never weaken a layer.** (a) `sqlguard.validate_select` must
    reject anything but a single `SELECT` (incl. CTE-hidden/stacked DML); (b) the executor runs in a
@@ -84,10 +88,11 @@ Keep `make test` and `make lint` green before committing. CI runs exactly these.
 - `record` — call the real model **and** save the exchange as a cassette.
 - `live` — call the real model, ignore cassettes.
 
-**Re-recording cassettes** (after an intentional prompt/model/retrieval change): bring the stack up, then
-run the flow that produces them in `record` mode (e.g. `LLM_MODE=record make eval`), review the diff in
-`tests/cassettes/`, and commit. A spurious cassette diff on an unrelated change means something broke
-determinism — investigate rather than committing the churn.
+**Re-recording cassettes** (after an intentional prompt/model/retrieval change): bring up a DB, seed and
+index it, then run the eval flow in `record` mode (`LLM_MODE=record python -m evals.run_evals`). This
+regenerates both the LLM cassettes and the retrieval fixtures under `tests/cassettes/`. Review the diff
+and commit. A spurious diff on an unrelated change means something broke determinism — investigate rather
+than committing the churn. (Replay/CI then need only a seeded DB — no index, no embedding model.)
 
 ## Environment gotchas (this machine / sandboxed shells)
 

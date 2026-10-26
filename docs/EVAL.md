@@ -4,10 +4,19 @@ The agent is scored by **execution-match**: run the agent's SQL and a gold SQL
 against the seeded DB and compare result *sets* (order/column-insensitive,
 float-tolerant). Ambiguous/unanswerable items are scored on behaviour
 (clarify / low-confidence abort). The whole suite replays from cassettes, so it
-runs **offline, deterministically, with no API key** — and it's gated in CI.
+runs **offline, deterministically, with no API key** — and it's **gated in CI**
+(`EVAL_THRESHOLD=0.55`; see [`.github/workflows/ci.yml`](../.github/workflows/ci.yml)).
+
+Both the LLM calls *and* the retrieval step are recorded/replayed. Pinning the
+retrieved context matters: ranking tables by embedding similarity is
+machine-sensitive, so freezing it keeps every prompt byte-identical across
+machines — which is what makes the CI gate stable. Replay therefore needs only a
+**seeded DB** (for SQL execution and gold comparison): no embedding model, no
+pgvector index.
 
 ```bash
-make eval                 # LLM_MODE=replay, needs the DB up
+make seed                 # deterministic shop data (no index needed for replay)
+make eval                 # LLM_MODE=replay
 EVAL_THRESHOLD=0.7 make eval
 ```
 
