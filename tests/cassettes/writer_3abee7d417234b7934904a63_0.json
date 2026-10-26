@@ -1,9 +1,0 @@
-{
-  "content": "```json\n{\n  \"sql\": \"SELECT p.category, sum(oi.line_total) AS total_revenue FROM order_items oi JOIN products p ON p.id = oi.product_id GROUP BY p.category ORDER BY total_revenue DESC\",\n  \"tables_used\": [\"order_items\", \"products\"],\n  \"rationale\": \"Join order_items to products on product_id to access category dimension. Sum line_total grouped by category and sort descending by revenue. No filters or time range specified, so all data included.\"\n}\n```",
-  "usage": {
-    "completion_tokens": 130,
-    "cost_usd": 0.002243,
-    "prompt_tokens": 1593,
-    "total_tokens": 1723
-  }
-}

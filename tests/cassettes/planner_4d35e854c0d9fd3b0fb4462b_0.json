@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"intent\": \"Identify the top-performing sellers based on sales revenue\",\n  \"metrics\": [\n    \"sum(order_items.line_total)\"\n  ],\n  \"dimensions\": [\n    \"sellers.id\",\n    \"sellers.name\"\n  ],\n  \"filters\": [],\n  \"time_range\": null,\n  \"sort\": \"sum(order_items.line_total) DESC\",\n  \"limit\": 10,\n  \"tables\": [\n    \"sellers\",\n    \"order_items\"\n  ],\n  \"needs_clarification\": false,\n  \"clarifying_question\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 155,
+    "cost_usd": 0.006813,
+    "prompt_tokens": 1496,
+    "total_tokens": 1651
+  }
+}

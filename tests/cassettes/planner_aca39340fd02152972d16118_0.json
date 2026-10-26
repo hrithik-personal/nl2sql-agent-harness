@@ -1,9 +1,0 @@
-{
-  "content": "```json\n{\n  \"intent\": \"Count the number of orders that have been delivered\",\n  \"metrics\": [\n    \"count(orders.id)\"\n  ],\n  \"dimensions\": [],\n  \"filters\": [\n    \"orders.status = 'delivered'\"\n  ],\n  \"time_range\": null,\n  \"sort\": null,\n  \"limit\": null,\n  \"tables\": [\n    \"orders\"\n  ],\n  \"needs_clarification\": false,\n  \"clarifying_question\": null\n}\n```",
-  "usage": {
-    "completion_tokens": 127,
-    "cost_usd": 0.006392999999999999,
-    "prompt_tokens": 1496,
-    "total_tokens": 1623
-  }
-}

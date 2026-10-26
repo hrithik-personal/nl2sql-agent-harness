@@ -1,9 +1,0 @@
-{
-  "content": "```json\n{\n  \"sql\": \"SELECT s.name, sum(oi.line_total) AS revenue FROM order_items oi JOIN sellers s ON s.id = oi.seller_id GROUP BY s.name ORDER BY revenue DESC LIMIT 10\",\n  \"tables_used\": [\"order_items\", \"sellers\"],\n  \"rationale\": \"The plan requests top-performing sellers by sales revenue. We join order_items with sellers on seller_id, aggregate line_total by seller name, sort descending by revenue, and limit to 10 results. No filters are specified, so all sales are included regardless of order status.\"\n}\n```",
-  "usage": {
-    "completion_tokens": 149,
-    "cost_usd": 0.002355,
-    "prompt_tokens": 1610,
-    "total_tokens": 1759
-  }
-}

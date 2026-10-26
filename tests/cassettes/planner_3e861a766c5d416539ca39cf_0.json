@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"intent\": \"Find the top 3 customers ranked by their total number of orders\",\n  \"metrics\": [\n    \"count(orders.id)\"\n  ],\n  \"dimensions\": [\n    \"customers.id\",\n    \"customers.name\"\n  ],\n  \"filters\": [],\n  \"time_range\": null,\n  \"sort\": \"count(orders.id) DESC\",\n  \"limit\": 3,\n  \"tables\": [\n    \"customers\",\n    \"orders\"\n  ],\n  \"needs_clarification\": false,\n  \"clarifying_question\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 148,
+    "cost_usd": 0.006813,
+    "prompt_tokens": 1531,
+    "total_tokens": 1679
+  }
+}

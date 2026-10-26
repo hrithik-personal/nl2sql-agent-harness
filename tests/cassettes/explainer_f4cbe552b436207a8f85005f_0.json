@@ -1,9 +1,0 @@
-{
-  "content": "```json\n{\n  \"text\": \"1,095 orders were delivered.\",\n  \"confidence\": 0.95,\n  \"chart\": null\n}\n```",
-  "usage": {
-    "completion_tokens": 41,
-    "cost_usd": 0.000587,
-    "prompt_tokens": 382,
-    "total_tokens": 423
-  }
-}

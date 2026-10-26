@@ -1,9 +1,9 @@
 {
-  "content": "```json\n{\n  \"sql\": \"SELECT method, count(id) AS successful_payments FROM payments WHERE status = 'success' GROUP BY method ORDER BY successful_payments DESC\",\n  \"tables_used\": [\"payments\"],\n  \"rationale\": \"The plan requests a count of successful payments grouped by payment method. This is a straightforward aggregation query filtering for status='success', grouping by method, and counting payment IDs. No joins are needed since all required columns are in the payments table.\"\n}\n```",
+  "content": "```json\n{\n  \"sql\": \"SELECT method, count(id) AS successful_payments FROM payments WHERE status = 'success' GROUP BY method ORDER BY successful_payments DESC\",\n  \"tables_used\": [\"payments\"],\n  \"rationale\": \"The plan requests a count of successful payments grouped by payment method. This is a straightforward aggregation query filtering for status='success', grouping by the method dimension, and counting payment IDs. No joins are needed as all required columns exist in the payments table.\"\n}\n```",
   "usage": {
-    "completion_tokens": 116,
-    "cost_usd": 0.002306,
+    "completion_tokens": 118,
+    "cost_usd": 0.002316,
     "prompt_tokens": 1726,
-    "total_tokens": 1842
+    "total_tokens": 1844
   }
 }
