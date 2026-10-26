@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"sql\": \"SELECT c.id, c.name, count(o.id) AS order_count FROM customers c LEFT JOIN orders o ON c.id = o.customer_id GROUP BY c.id, c.name ORDER BY order_count DESC LIMIT 3\",\n  \"tables_used\": [\"customers\", \"orders\"],\n  \"rationale\": \"Join customers with orders on customer_id, group by customer id and name, count orders per customer, sort by count descending, and limit to top 3. Using LEFT JOIN ensures customers with no orders are included (with count 0) if needed, though they would naturally sort to the bottom.\"\n}\n```",
+  "usage": {
+    "completion_tokens": 155,
+    "cost_usd": 0.0024159999999999997,
+    "prompt_tokens": 1641,
+    "total_tokens": 1796
+  }
+}

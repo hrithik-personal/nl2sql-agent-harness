@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"intent\": \"Count the number of successful payments grouped by payment method\",\n  \"metrics\": [\n    \"count(payments.id)\"\n  ],\n  \"dimensions\": [\n    \"payments.method\"\n  ],\n  \"filters\": [\n    \"payments.status = 'success'\"\n  ],\n  \"time_range\": null,\n  \"sort\": null,\n  \"limit\": null,\n  \"tables\": [\n    \"payments\"\n  ],\n  \"needs_clarification\": false,\n  \"clarifying_question\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 138,
+    "cost_usd": 0.007101,
+    "prompt_tokens": 1677,
+    "total_tokens": 1815
+  }
+}

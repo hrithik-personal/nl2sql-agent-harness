@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"sql\": \"SELECT status, count(id) AS count FROM orders GROUP BY status\",\n  \"tables_used\": [\"orders\"],\n  \"rationale\": \"The plan requests a count of orders grouped by their status. This is a straightforward aggregation query that groups the orders table by the status column and counts the number of order IDs in each group.\"\n}\n```",
+  "usage": {
+    "completion_tokens": 90,
+    "cost_usd": 0.001947,
+    "prompt_tokens": 1497,
+    "total_tokens": 1587
+  }
+}

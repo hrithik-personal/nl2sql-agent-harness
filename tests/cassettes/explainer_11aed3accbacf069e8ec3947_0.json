@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"text\": \"The total revenue from all non-cancelled orders is $234,103,240.33.\",\n  \"confidence\": 0.95,\n  \"chart\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 52,
+    "cost_usd": 0.000655,
+    "prompt_tokens": 395,
+    "total_tokens": 447
+  }
+}

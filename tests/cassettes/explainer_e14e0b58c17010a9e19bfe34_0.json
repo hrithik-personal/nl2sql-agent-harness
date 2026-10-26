@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"text\": \"There are 7 distinct product categories in the database.\",\n  \"confidence\": 0.95,\n  \"chart\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 45,
+    "cost_usd": 0.000601,
+    "prompt_tokens": 376,
+    "total_tokens": 421
+  }
+}

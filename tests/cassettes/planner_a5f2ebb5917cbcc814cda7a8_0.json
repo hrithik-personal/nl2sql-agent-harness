@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"intent\": \"Count the number of shipments that were delivered after their SLA deadline\",\n  \"metrics\": [\n    \"count(shipments.id)\"\n  ],\n  \"dimensions\": [],\n  \"filters\": [\n    \"shipments.status = 'delivered'\",\n    \"shipments.delivered_at is not null\",\n    \"shipments.shipped_at is not null\",\n    \"date_diff(days, shipments.shipped_at, shipments.delivered_at) > shipments.sla_days\"\n  ],\n  \"time_range\": null,\n  \"sort\": null,\n  \"limit\": null,\n  \"tables\": [\n    \"shipments\"\n  ],\n  \"needs_clarification\": false,\n  \"clarifying_question\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 194,
+    "cost_usd": 0.007413,
+    "prompt_tokens": 1501,
+    "total_tokens": 1695
+  }
+}

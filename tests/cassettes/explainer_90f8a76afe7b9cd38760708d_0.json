@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"text\": \"The single most expensive product price is $49,978.79.\",\n  \"confidence\": 0.95,\n  \"chart\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 47,
+    "cost_usd": 0.0006169999999999999,
+    "prompt_tokens": 382,
+    "total_tokens": 429
+  }
+}

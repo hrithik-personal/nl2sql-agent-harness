@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"sql\": \"SELECT max(price) AS max_price FROM products\",\n  \"tables_used\": [\"products\"],\n  \"rationale\": \"The plan requests the maximum product price from the products table. This is a simple aggregate query with no filters, dimensions, or joins needed. A single MAX() function on the price column returns the result.\"\n}\n```",
+  "usage": {
+    "completion_tokens": 87,
+    "cost_usd": 0.002016,
+    "prompt_tokens": 1581,
+    "total_tokens": 1668
+  }
+}

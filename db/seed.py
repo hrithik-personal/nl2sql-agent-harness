@@ -16,7 +16,10 @@ from faker import Faker
 from nl2sql.config import get_settings
 
 SEED = 42
-NOW = datetime(2026, 9, 1, tzinfo=UTC)  # fixed anchor
+# Anchor to seed-time "now" so time-window queries (last 30 days, etc.) return
+# real data. Faker/random stay seeded, so names/categories/amounts are stable;
+# only absolute timestamps float with the seed date.
+NOW = datetime.now(UTC)
 N_SELLERS = 40
 N_CUSTOMERS = 300
 N_PRODUCTS = 300

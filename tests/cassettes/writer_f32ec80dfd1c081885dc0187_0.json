@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"sql\": \"SELECT count(orders.id) FROM orders WHERE orders.created_at >= current_date - interval '30 days'\",\n  \"tables_used\": [\"orders\"],\n  \"rationale\": \"The plan requests a count of orders placed in the last 30 days. This is a straightforward aggregation query filtering orders by created_at timestamp within the 30-day window. No joins or grouping are needed.\"\n}\n```",
+  "usage": {
+    "completion_tokens": 108,
+    "cost_usd": 0.002111,
+    "prompt_tokens": 1571,
+    "total_tokens": 1679
+  }
+}

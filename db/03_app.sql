@@ -1,6 +1,7 @@
 -- App-owned state: retrieval index (pgvector) + run traces.
 -- bge-small-en-v1.5 => 384-dim embeddings.
-SET search_path TO app;
+-- public is on the path so the `vector` type + opclasses (installed there) resolve.
+SET search_path TO app, public;
 
 CREATE TABLE IF NOT EXISTS schema_cards (
     table_name  TEXT PRIMARY KEY,

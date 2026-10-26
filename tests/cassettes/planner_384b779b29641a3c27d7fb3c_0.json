@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"intent\": \"Find the maximum product price from the products table\",\n  \"metrics\": [\n    \"max(products.price)\"\n  ],\n  \"dimensions\": [],\n  \"filters\": [],\n  \"time_range\": null,\n  \"sort\": null,\n  \"limit\": null,\n  \"tables\": [\n    \"products\"\n  ],\n  \"needs_clarification\": false,\n  \"clarifying_question\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 113,
+    "cost_usd": 0.0061920000000000005,
+    "prompt_tokens": 1499,
+    "total_tokens": 1612
+  }
+}

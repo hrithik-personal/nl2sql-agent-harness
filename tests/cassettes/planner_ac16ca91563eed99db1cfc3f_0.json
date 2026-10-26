@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"intent\": \"Show total revenue per month for the last 6 months\",\n  \"metrics\": [\n    \"sum(orders.total_amount)\"\n  ],\n  \"dimensions\": [\n    \"month(orders.created_at)\",\n    \"year(orders.created_at)\"\n  ],\n  \"filters\": [\n    \"orders.created_at >= current_date - interval '6 months'\",\n    \"orders.status not in ('cancelled', 'returned')\"\n  ],\n  \"time_range\": \"last 6 months\",\n  \"sort\": \"year(orders.created_at), month(orders.created_at)\",\n  \"limit\": null,\n  \"tables\": [\n    \"orders\"\n  ],\n  \"needs_clarification\": false,\n  \"clarifying_question\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 202,
+    "cost_usd": 0.0075390000000000006,
+    "prompt_tokens": 1503,
+    "total_tokens": 1705
+  }
+}

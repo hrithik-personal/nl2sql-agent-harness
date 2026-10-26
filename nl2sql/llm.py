@@ -35,6 +35,15 @@ AGENT_MODEL = {
     "explainer": "explainer-model",
 }
 
+# real model id per agent (mirror of litellm/config.yaml) — used only for $/query
+# cost estimation when the proxy doesn't echo response_cost
+AGENT_REAL_MODEL = {
+    "planner": "claude-sonnet-4-5",
+    "verifier": "claude-sonnet-4-5",
+    "writer": "claude-haiku-4-5",
+    "explainer": "claude-haiku-4-5",
+}
+
 
 class LLMUsage(BaseModel):
     prompt_tokens: int = 0
@@ -58,39 +67,73 @@ def _agent_key(agent: str) -> str:
     }.get(agent, s.litellm_key_planner)
 
 
-def _cassette_path(agent: str, model: str, messages: list[dict], schema_name: str) -> Path:
+# occurrence counter per base key: the self-correction loop can issue the SAME
+# prompt twice in one run (the writer re-emits identical SQL); at temperature 0 the
+# model may still differ, so each occurrence needs its own cassette, replayed in order.
+_occurrence: dict[str, int] = {}
+
+
+def reset_cassette_counters() -> None:
+    """Call at the start of each run so record and replay index identically."""
+    _occurrence.clear()
+
+
+def _base_digest(agent: str, model: str, messages: list[dict], schema_name: str) -> str:
     payload = json.dumps(
         {"agent": agent, "model": model, "messages": messages, "schema": schema_name},
         sort_keys=True,
     )
-    digest = hashlib.sha256(payload.encode()).hexdigest()[:24]
-    return CASSETTE_DIR / f"{agent}_{digest}.json"
+    return hashlib.sha256(payload.encode()).hexdigest()[:24]
+
+
+def _cassette_path(agent: str, model: str, messages: list[dict], schema_name: str) -> Path:
+    """Path for the *next* occurrence of this prompt, advancing the counter."""
+    digest = _base_digest(agent, model, messages, schema_name)
+    idx = _occurrence.get(digest, 0)
+    _occurrence[digest] = idx + 1
+    return CASSETTE_DIR / f"{agent}_{digest}_{idx}.json"
 
 
 def _call_litellm(agent: str, model: str, messages: list[dict]) -> LLMResponse:
     import litellm  # imported lazily so replay-mode tests need no litellm install
 
     s = get_settings()
+    # `litellm_proxy/` routes through our LiteLLM proxy (which owns the real
+    # provider/model mapping per virtual key). JSON is requested via the prompt;
+    # the proxy drops response_format for providers that don't support it.
     resp = litellm.completion(
-        model=model,
+        model=f"litellm_proxy/{model}",
         messages=messages,
         api_key=_agent_key(agent),
-        base_url=s.litellm_base_url,
+        api_base=s.litellm_base_url,
         temperature=0,
-        response_format={"type": "json_object"},
     )
     content = resp.choices[0].message.content or "{}"
+    usage = getattr(resp, "usage", None)
+    pt = getattr(usage, "prompt_tokens", 0) or 0
+    ct = getattr(usage, "completion_tokens", 0) or 0
+
+    # cost: prefer the proxy's response_cost; else estimate from the real model + tokens
+    cost = 0.0
     try:
-        cost = float(litellm.completion_cost(completion_response=resp))
+        hp = getattr(resp, "_hidden_params", {}) or {}
+        cost = float(hp.get("response_cost") or 0.0)
     except Exception:
         cost = 0.0
-    usage = getattr(resp, "usage", None)
+    if not cost and AGENT_REAL_MODEL.get(agent):
+        try:
+            pc, cc = litellm.cost_per_token(
+                model=AGENT_REAL_MODEL[agent], prompt_tokens=pt, completion_tokens=ct
+            )
+            cost = float(pc) + float(cc)
+        except Exception:
+            cost = 0.0
     return LLMResponse(
         content=content,
         usage=LLMUsage(
-            prompt_tokens=getattr(usage, "prompt_tokens", 0) or 0,
-            completion_tokens=getattr(usage, "completion_tokens", 0) or 0,
-            total_tokens=getattr(usage, "total_tokens", 0) or 0,
+            prompt_tokens=pt,
+            completion_tokens=ct,
+            total_tokens=getattr(usage, "total_tokens", 0) or (pt + ct),
             cost_usd=cost,
         ),
     )
@@ -121,6 +164,22 @@ def _raw_complete(agent: str, messages: list[dict], schema_name: str) -> LLMResp
     return resp
 
 
+def _extract_json(text: str) -> str:
+    """Strip markdown fences / prose and return the JSON object substring."""
+    t = (text or "").strip()
+    if t.startswith("```"):
+        t = t[3:]
+        if t[:4].lower() == "json":
+            t = t[4:]
+        if t.endswith("```"):
+            t = t[:-3]
+        t = t.strip()
+    start, end = t.find("{"), t.rfind("}")
+    if start != -1 and end != -1 and end > start:
+        return t[start : end + 1]
+    return t
+
+
 def complete_structured(
     agent: str,
     system: str,
@@ -141,7 +200,7 @@ def complete_structured(
 
     resp = _raw_complete(agent, messages, schema.__name__)
     try:
-        return schema.model_validate_json(resp.content), resp.usage
+        return schema.model_validate_json(_extract_json(resp.content)), resp.usage
     except (ValidationError, ValueError):
         # one repair round-trip
         repair = messages + [
@@ -152,4 +211,4 @@ def complete_structured(
             },
         ]
         resp2 = _raw_complete(agent, repair, schema.__name__)
-        return schema.model_validate_json(resp2.content), resp2.usage
+        return schema.model_validate_json(_extract_json(resp2.content)), resp2.usage

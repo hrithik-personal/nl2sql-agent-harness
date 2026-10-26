@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"sql\": \"SELECT count(id) FROM orders WHERE status = 'cancelled'\",\n  \"tables_used\": [\"orders\"],\n  \"rationale\": \"The plan requests a count of orders with status 'cancelled'. This is a straightforward aggregation query filtering the orders table by the cancelled status.\"\n}\n```",
+  "usage": {
+    "completion_tokens": 79,
+    "cost_usd": 0.0019459999999999998,
+    "prompt_tokens": 1551,
+    "total_tokens": 1630
+  }
+}

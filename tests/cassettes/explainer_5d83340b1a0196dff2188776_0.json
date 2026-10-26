@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"text\": \"Over the last 6 months, total revenue ranged from $4.1M (April 2026) to $18.5M (June 2026), with an average of approximately $14.9M per month. The highest revenue was in June 2026 at $18.5M, while April had the lowest at $4.1M.\",\n  \"confidence\": 0.95,\n  \"chart\": {\n    \"type\": \"line\",\n    \"x\": \"month\",\n    \"y\": \"total_revenue\"\n  }\n}\n```",
+  "usage": {
+    "completion_tokens": 140,
+    "cost_usd": 0.0013210000000000001,
+    "prompt_tokens": 621,
+    "total_tokens": 761
+  }
+}

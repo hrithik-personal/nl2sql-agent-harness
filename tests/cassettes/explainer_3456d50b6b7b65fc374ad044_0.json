@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"text\": \"Card payments led with 333 successful transactions, followed by wallet (325), UPI (323), net banking (322), and cash on delivery (295). All payment methods showed relatively balanced success rates, with card being the most popular.\",\n  \"confidence\": 0.95,\n  \"chart\": {\n    \"type\": \"bar\",\n    \"x\": \"method\",\n    \"y\": \"successful_payments\"\n  }\n}\n```",
+  "usage": {
+    "completion_tokens": 111,
+    "cost_usd": 0.000988,
+    "prompt_tokens": 433,
+    "total_tokens": 544
+  }
+}

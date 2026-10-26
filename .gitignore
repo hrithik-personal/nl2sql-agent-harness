@@ -21,3 +21,6 @@ models/
 
 # Data dumps
 *.pgdata/
+
+# backups
+*.bak

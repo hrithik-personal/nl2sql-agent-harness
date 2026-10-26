@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"sql\": \"SELECT avg(total_amount) FROM orders WHERE status = 'delivered'\",\n  \"tables_used\": [\"orders\"],\n  \"rationale\": \"The plan requests a single aggregate metric (average of total_amount) filtered by orders with status 'delivered'. No joins, grouping, or sorting are needed. A simple SELECT with WHERE clause suffices.\"\n}\n```",
+  "usage": {
+    "completion_tokens": 94,
+    "cost_usd": 0.002068,
+    "prompt_tokens": 1598,
+    "total_tokens": 1692
+  }
+}

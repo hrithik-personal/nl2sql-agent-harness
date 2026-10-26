@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"intent\": \"Calculate the average customer satisfaction score\",\n  \"metrics\": [],\n  \"dimensions\": [],\n  \"filters\": [],\n  \"time_range\": null,\n  \"sort\": null,\n  \"limit\": null,\n  \"tables\": [],\n  \"needs_clarification\": true,\n  \"clarifying_question\": \"I don't see a customer satisfaction score or rating column in the available tables. Are you looking for a proxy metric like delivery success rate, refund rate, or is there a specific feedback/rating table I should be aware of?\"\n}\n```",
+  "usage": {
+    "completion_tokens": 137,
+    "cost_usd": 0.006392999999999999,
+    "prompt_tokens": 1446,
+    "total_tokens": 1583
+  }
+}

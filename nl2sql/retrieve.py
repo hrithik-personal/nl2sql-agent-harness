@@ -51,7 +51,14 @@ class PgVectorRetriever:
         self.cards: dict[str, TableCard] = {c.table: c for c in introspect(self.s)}
 
     def _conn(self) -> psycopg.Connection:
-        conn = psycopg.connect(self.s.app_dsn(), autocommit=True)
+        # disable index scans so ranking is EXACT (not approximate HNSW) — the
+        # corpus is tiny and this makes retrieval fully deterministic, which the
+        # cassette-replay/eval path relies on.
+        conn = psycopg.connect(
+            self.s.app_dsn(),
+            autocommit=True,
+            options="-c enable_indexscan=off -c enable_bitmapscan=off",
+        )
         register_vector(conn)
         return conn
 
@@ -70,15 +77,21 @@ class PgVectorRetriever:
         return expanded
 
     def __call__(self, question: str) -> RetrievedContext:
-        qvec = self.embedder.embed_query(question)
+        import numpy as np
+
+        # pass as ndarray so pgvector's dumper emits a `vector` (a plain list is
+        # inferred as double precision[] and the <=> operator won't match)
+        qvec = np.asarray(self.embedder.embed_query(question), dtype=np.float32)
         with self._conn() as conn, conn.cursor() as cur:
             cur.execute(
-                "SELECT table_name FROM app.schema_cards ORDER BY embedding <=> %s LIMIT %s",
+                "SELECT table_name FROM app.schema_cards "
+                "ORDER BY embedding <=> %s, table_name LIMIT %s",  # stable tiebreak
                 (qvec, self.top_k),
             )
             ranked = [r[0] for r in cur.fetchall()]
             cur.execute(
-                "SELECT question, sql FROM app.exemplars ORDER BY embedding <=> %s LIMIT %s",
+                "SELECT question, sql FROM app.exemplars "
+                "ORDER BY embedding <=> %s, id LIMIT %s",  # stable tiebreak
                 (qvec, self.top_m),
             )
             exemplars = [Exemplar(question=r[0], sql=r[1]) for r in cur.fetchall()]

@@ -106,4 +106,32 @@ def validate_select(
     except Exception:  # noqa: BLE001 - limit injection is non-critical
         pass
 
+    _add_deterministic_order(root)
     return GuardResult(True, sql=root.sql(dialect="postgres"), tables=tables)
+
+
+def _add_deterministic_order(root: exp.Expression) -> None:
+    """Append positional ORDER BY tiebreakers for every output column.
+
+    Any existing ORDER BY stays the primary key; the appended ordinals only break
+    ties, giving a total, stable row order. This makes results deterministic
+    (crucial for the verifier/explainer samples and cassette replay) without
+    changing which rows are returned or an intended ranking.
+    """
+    try:
+        sel = root.this if isinstance(root, exp.With) else root
+        if not isinstance(sel, exp.Select):
+            return
+        ncols = len(sel.expressions)
+        if ncols == 0:
+            return
+        order = sel.args.get("order")
+        keys = list(order.expressions) if order else []
+        have = {k.sql() for k in keys}
+        for i in range(1, ncols + 1):
+            ordered = exp.Ordered(this=exp.Literal.number(i))
+            if ordered.sql() not in have:
+                keys.append(ordered)
+        sel.set("order", exp.Order(expressions=keys))
+    except Exception:  # noqa: BLE001 - ordering is a best-effort stabiliser
+        pass

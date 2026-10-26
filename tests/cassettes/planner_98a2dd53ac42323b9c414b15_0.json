@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"intent\": \"Calculate the average delivery time in days for each courier\",\n  \"metrics\": [\n    \"avg(delivered_at - shipped_at) as avg_delivery_days\"\n  ],\n  \"dimensions\": [\n    \"couriers.name\"\n  ],\n  \"filters\": [\n    \"shipments.status = 'delivered'\",\n    \"shipments.shipped_at IS NOT NULL\",\n    \"shipments.delivered_at IS NOT NULL\"\n  ],\n  \"time_range\": null,\n  \"sort\": \"avg_delivery_days DESC\",\n  \"limit\": null,\n  \"tables\": [\n    \"shipments\",\n    \"couriers\"\n  ],\n  \"needs_clarification\": false,\n  \"clarifying_question\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 191,
+    "cost_usd": 0.006687,
+    "prompt_tokens": 1274,
+    "total_tokens": 1465
+  }
+}

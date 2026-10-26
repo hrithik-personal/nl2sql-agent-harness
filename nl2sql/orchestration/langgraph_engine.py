@@ -15,6 +15,7 @@ Nodes close over injected `Deps`, so the whole graph runs under test with fakes
 from __future__ import annotations
 
 import time
+import warnings
 
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
@@ -22,6 +23,10 @@ from langgraph.types import Command, RetryPolicy, interrupt
 
 from nl2sql.orchestration.base import Deps, Orchestrator, RunResult
 from nl2sql.schemas import Answer, ExecError, ExecResult, RunState, TraceStep
+
+# our Pydantic state round-trips cleanly through the checkpointer; silence the
+# "Deserializing unregistered type" notices for our own schema module
+warnings.filterwarnings("ignore", message="Deserializing unregistered type nl2sql.*")
 
 # retry transient LLM/node exceptions with backoff (distinct from the semantic
 # Writer<->Verifier retry, which is a conditional edge)
@@ -194,10 +199,16 @@ class LangGraphEngine(Orchestrator):
     def run(self, question: str, thread_id: str | None = None) -> RunResult:
         import uuid
 
+        from nl2sql.llm import reset_cassette_counters
+
+        reset_cassette_counters()
         tid = thread_id or uuid.uuid4().hex
         self.app.invoke(RunState(question=question), self._config(tid))
         return self._finish(tid)
 
     def resume(self, thread_id: str, answer: str) -> RunResult:
+        from nl2sql.llm import reset_cassette_counters
+
+        reset_cassette_counters()
         self.app.invoke(Command(resume=answer), self._config(thread_id))
         return self._finish(thread_id)

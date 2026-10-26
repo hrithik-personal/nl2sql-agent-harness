@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"sql\": \"SELECT c.name, avg(EXTRACT(EPOCH FROM (sh.delivered_at - sh.shipped_at)) / 86400.0) AS avg_delivery_days FROM shipments sh JOIN couriers c ON c.id = sh.courier_id WHERE sh.status = 'delivered' AND sh.shipped_at IS NOT NULL AND sh.delivered_at IS NOT NULL GROUP BY c.name ORDER BY avg_delivery_days DESC LIMIT 100\",\n  \"tables_used\": [\"shipments\", \"couriers\"],\n  \"rationale\": \"Calculates average delivery time in days for each courier by joining shipments with couriers, filtering for delivered shipments with both shipped_at and delivered_at timestamps, extracting the epoch difference in seconds and converting to days, grouping by courier name, and sorting by average delivery days in descending order.\"\n}\n```",
+  "usage": {
+    "completion_tokens": 205,
+    "cost_usd": 0.0024460000000000003,
+    "prompt_tokens": 1421,
+    "total_tokens": 1626
+  }
+}

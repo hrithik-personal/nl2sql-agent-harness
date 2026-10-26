@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"intent\": \"Find the product category with the highest number of refunds\",\n  \"metrics\": [\n    \"count(refunds.id)\"\n  ],\n  \"dimensions\": [\n    \"products.category\"\n  ],\n  \"filters\": [],\n  \"time_range\": null,\n  \"sort\": \"count(refunds.id) DESC\",\n  \"limit\": 1,\n  \"tables\": [\n    \"refunds\",\n    \"orders\",\n    \"order_items\",\n    \"products\"\n  ],\n  \"needs_clarification\": false,\n  \"clarifying_question\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 153,
+    "cost_usd": 0.006348,
+    "prompt_tokens": 1351,
+    "total_tokens": 1504
+  }
+}

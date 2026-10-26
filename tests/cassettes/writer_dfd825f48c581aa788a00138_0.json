@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"sql\": \"SELECT count(id) FROM orders\",\n  \"tables_used\": [\"orders\"],\n  \"rationale\": \"Simple count of all order IDs from the orders table. No filters, dimensions, or joins needed. Using count(id) as specified in the metrics.\"\n}\n```",
+  "usage": {
+    "completion_tokens": 74,
+    "cost_usd": 0.001903,
+    "prompt_tokens": 1533,
+    "total_tokens": 1607
+  }
+}

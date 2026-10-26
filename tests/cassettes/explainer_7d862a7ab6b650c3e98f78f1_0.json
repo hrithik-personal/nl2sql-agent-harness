@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"text\": \"The average order total for delivered orders is $133,116.33.\",\n  \"confidence\": 0.95,\n  \"chart\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 48,
+    "cost_usd": 0.000629,
+    "prompt_tokens": 389,
+    "total_tokens": 437
+  }
+}

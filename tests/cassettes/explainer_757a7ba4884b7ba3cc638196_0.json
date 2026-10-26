@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"text\": \"There were 249 orders cancelled.\",\n  \"confidence\": 0.95,\n  \"chart\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 41,
+    "cost_usd": 0.000582,
+    "prompt_tokens": 377,
+    "total_tokens": 418
+  }
+}

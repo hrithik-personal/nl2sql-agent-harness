@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"text\": \"171 orders were placed in the last 30 days.\",\n  \"confidence\": 0.95,\n  \"chart\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 46,
+    "cost_usd": 0.000626,
+    "prompt_tokens": 396,
+    "total_tokens": 442
+  }
+}

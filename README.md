@@ -15,15 +15,20 @@ Planner → Writer → Executor(sandbox) → Verifier → (retry ↺) → Explai
 ```
 
 ## Status
-Phases 1–2 implemented. **27 tests green, ruff clean** (verified without external services via
-fakes + the execution-match comparator):
-- SQL-safety guard (single-SELECT, CTE-hidden-DML rejection, LIMIT injection)
-- LangGraph engine: happy path, self-correction loop, retry budget, **wall-clock budget**, clarify interrupt/resume
-- execution-match comparator; tool permission matrix
+Phases 1–2 implemented and **verified end-to-end against the live stack** (Postgres + LiteLLM +
+Phoenix via `docker compose`):
 
-Written and wired, pending a live DB + API key to run end-to-end: agents, pgvector retriever,
-DB-side of the sandbox executor, FastAPI, Streamlit, MCP server (stdio + HTTP), eval harness,
-`docker-compose`, LiteLLM routing/fallback, OTel→Phoenix. See [`docs/FAILURE_MODES.md`](docs/FAILURE_MODES.md).
+- **27 unit tests green, ruff clean** (guard, engine, comparator, permissions — no services needed).
+- **Full pipeline runs live** over FastAPI (`/ask`) and in-process: NL → plan → SQL → sandboxed
+  execute → verify → explain, with per-agent **model routing** (Sonnet planner/verifier, Haiku
+  writer/explainer) and **cost tracking (~$0.012/query)**.
+- **Sandbox proven on the live DB**: DELETE, CTE-hidden DELETE and stacked DROP are rejected, and a
+  raw `UPDATE` as `analyst_ro` is blocked by the read-only transaction.
+- **Eval harness is deterministic & offline**: 20-item suite replays from cassettes (no API key),
+  **61.1% execution-match / 100% valid-SQL**, gated in CI. See [`docs/EVAL.md`](docs/EVAL.md) for the
+  honest failure analysis and [`docs/FAILURE_MODES.md`](docs/FAILURE_MODES.md).
+
+Remaining: Phase 3 stretch (hand-written engine, agentic-RAG toggle, LLM-as-judge) and a demo video.
 
 ## Quickstart
 ```bash

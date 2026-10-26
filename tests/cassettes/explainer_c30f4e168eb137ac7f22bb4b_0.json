@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"text\": \"The top 3 customers by number of orders are Qasim Handa (14 orders), Laksh Wagle (14 orders), and Victor Choudhary (14 orders), all tied with the same order count.\",\n  \"confidence\": 0.95,\n  \"chart\": {\n    \"type\": \"bar\",\n    \"x\": \"name\",\n    \"y\": \"order_count\"\n  }\n}\n```",
+  "usage": {
+    "completion_tokens": 116,
+    "cost_usd": 0.0010530000000000001,
+    "prompt_tokens": 473,
+    "total_tokens": 589
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"text\": \"Total delivered revenue by customer state shows Maharashtra leading with $23.08M, followed by Telangana ($22.96M) and Delhi ($22.51M). The seven states analyzed generated approximately $146.76M in total delivered revenue.\",\n  \"confidence\": 0.95,\n  \"chart\": {\n    \"type\": \"bar\",\n    \"x\": \"state\",\n    \"y\": \"total_revenue\"\n  }\n}\n```",
+  "usage": {
+    "completion_tokens": 114,
+    "cost_usd": 0.001067,
+    "prompt_tokens": 497,
+    "total_tokens": 611
+  }
+}

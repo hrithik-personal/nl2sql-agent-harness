@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"sql\": \"SELECT sum(total_amount) AS total_revenue FROM orders WHERE status != 'cancelled'\",\n  \"tables_used\": [\"orders\"],\n  \"rationale\": \"The plan requests a single metric (sum of total_amount) with one filter (status != 'cancelled') and no grouping dimensions. This is a straightforward aggregation query that sums all order amounts excluding cancelled orders.\"\n}\n```",
+  "usage": {
+    "completion_tokens": 102,
+    "cost_usd": 0.002087,
+    "prompt_tokens": 1577,
+    "total_tokens": 1679
+  }
+}

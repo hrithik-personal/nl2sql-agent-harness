@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"text\": \"Total revenue by product category ranges from $29.97M (Books) to $44.69M (Grocery). Grocery leads with $44.69M, followed by Home ($43.10M) and Sports ($39.45M), while Books generates the lowest revenue at $29.97M across all seven categories.\",\n  \"confidence\": 0.95,\n  \"chart\": {\n    \"type\": \"bar\",\n    \"x\": \"category\",\n    \"y\": \"total_revenue\"\n  }\n}\n```",
+  "usage": {
+    "completion_tokens": 131,
+    "cost_usd": 0.001146,
+    "prompt_tokens": 491,
+    "total_tokens": 622
+  }
+}

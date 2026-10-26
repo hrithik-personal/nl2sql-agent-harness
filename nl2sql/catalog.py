@@ -43,7 +43,7 @@ def introspect(settings: Settings | None = None, schema: str = "shop") -> list[T
                     rows = conn.execute(
                         text(
                             f'SELECT DISTINCT "{c["name"]}" FROM {schema}.{table} '
-                            f'WHERE "{c["name"]}" IS NOT NULL LIMIT 5'
+                            f'WHERE "{c["name"]}" IS NOT NULL ORDER BY 1 LIMIT 5'  # deterministic
                         )
                     ).fetchall()
                     vals = [str(r[0]) for r in rows]

@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"intent\": \"Count the number of orders placed in the last 30 days\",\n  \"metrics\": [\n    \"count(orders.id)\"\n  ],\n  \"dimensions\": [],\n  \"filters\": [\n    \"orders.created_at >= current_date - interval '30 days'\"\n  ],\n  \"time_range\": \"last 30 days\",\n  \"sort\": null,\n  \"limit\": null,\n  \"tables\": [\n    \"orders\"\n  ],\n  \"needs_clarification\": false,\n  \"clarifying_question\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 144,
+    "cost_usd": 0.006669,
+    "prompt_tokens": 1503,
+    "total_tokens": 1647
+  }
+}

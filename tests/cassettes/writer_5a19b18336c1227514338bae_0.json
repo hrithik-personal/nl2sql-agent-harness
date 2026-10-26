@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"sql\": \"SELECT count(shipments.id) FROM shipments WHERE shipments.status = 'delivered' AND shipments.delivered_at IS NOT NULL AND shipments.shipped_at IS NOT NULL AND EXTRACT(EPOCH FROM (shipments.delivered_at - shipments.shipped_at)) / 86400.0 > shipments.sla_days\",\n  \"tables_used\": [\"shipments\"],\n  \"rationale\": \"Count shipments with status 'delivered' that have both shipped_at and delivered_at timestamps, where the actual delivery time in days exceeds the SLA deadline. Used EXTRACT(EPOCH FROM ...) / 86400.0 to calculate the day difference between delivered_at and shipped_at, comparing it against sla_days.\"\n}\n```",
+  "usage": {
+    "completion_tokens": 187,
+    "cost_usd": 0.002587,
+    "prompt_tokens": 1652,
+    "total_tokens": 1839
+  }
+}

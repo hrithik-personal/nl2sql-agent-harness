@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"sql\": \"SELECT count(DISTINCT products.category) FROM products\",\n  \"tables_used\": [\"products\"],\n  \"rationale\": \"The plan requests a count of distinct product categories. This is a simple aggregation query on the products table using COUNT(DISTINCT category) to get the number of unique categories.\"\n}\n```",
+  "usage": {
+    "completion_tokens": 82,
+    "cost_usd": 0.002147,
+    "prompt_tokens": 1737,
+    "total_tokens": 1819
+  }
+}

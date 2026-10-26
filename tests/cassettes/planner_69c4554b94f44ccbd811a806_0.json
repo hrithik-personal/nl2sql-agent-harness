@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"intent\": \"Calculate the average order total for orders with status 'delivered'\",\n  \"metrics\": [\n    \"avg(orders.total_amount)\"\n  ],\n  \"dimensions\": [],\n  \"filters\": [\n    \"orders.status = 'delivered'\"\n  ],\n  \"time_range\": null,\n  \"sort\": null,\n  \"limit\": null,\n  \"tables\": [\n    \"orders\"\n  ],\n  \"needs_clarification\": false,\n  \"clarifying_question\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 133,
+    "cost_usd": 0.006495000000000001,
+    "prompt_tokens": 1500,
+    "total_tokens": 1633
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"text\": \"153 orders were returned.\",\n  \"confidence\": 0.95,\n  \"chart\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 39,
+    "cost_usd": 0.000576,
+    "prompt_tokens": 381,
+    "total_tokens": 420
+  }
+}

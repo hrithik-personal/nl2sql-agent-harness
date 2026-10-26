@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"text\": \"The average delivery times by courier range from 4.63 to 5.32 days. BlueDart has the longest average delivery time at 5.32 days, while IndiaPost is the fastest at 4.63 days. Shadowfax (4.83 days) and Delhivery (4.86 days) also perform well.\",\n  \"confidence\": 0.95,\n  \"chart\": {\n    \"type\": \"bar\",\n    \"x\": \"name\",\n    \"y\": \"avg_delivery_days\"\n  }\n}\n```",
+  "usage": {
+    "completion_tokens": 145,
+    "cost_usd": 0.001289,
+    "prompt_tokens": 564,
+    "total_tokens": 709
+  }
+}

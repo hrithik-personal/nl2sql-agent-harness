@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"text\": \"The 5 sellers with the highest delivered revenue are: Nair, Bhalla and Karnik ($6.66M), Ahuja-Dutta ($6.34M), Bala, Issac and Saini ($5.57M), Sidhu-Wadhwa ($5.54M), and Chaudry, Chahal and Sami ($5.47M).\",\n  \"confidence\": 0.95,\n  \"chart\": {\n    \"type\": \"bar\",\n    \"x\": \"name\",\n    \"y\": \"total_revenue\"\n  }\n}\n```",
+  "usage": {
+    "completion_tokens": 155,
+    "cost_usd": 0.0013410000000000002,
+    "prompt_tokens": 566,
+    "total_tokens": 721
+  }
+}

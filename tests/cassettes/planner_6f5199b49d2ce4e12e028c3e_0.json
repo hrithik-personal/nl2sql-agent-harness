@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"intent\": \"Calculate the total revenue from all orders excluding those with status 'cancelled'\",\n  \"metrics\": [\n    \"sum(orders.total_amount)\"\n  ],\n  \"dimensions\": [],\n  \"filters\": [\n    \"orders.status != 'cancelled'\"\n  ],\n  \"time_range\": null,\n  \"sort\": null,\n  \"limit\": null,\n  \"tables\": [\n    \"orders\"\n  ],\n  \"needs_clarification\": false,\n  \"clarifying_question\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 135,
+    "cost_usd": 0.006531,
+    "prompt_tokens": 1502,
+    "total_tokens": 1637
+  }
+}

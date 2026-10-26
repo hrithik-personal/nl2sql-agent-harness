@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"text\": \"592 shipments were delivered after their SLA deadline. This represents deliveries where the actual delivery time exceeded the promised SLA days.\",\n  \"confidence\": 0.95,\n  \"chart\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 61,
+    "cost_usd": 0.000751,
+    "prompt_tokens": 446,
+    "total_tokens": 507
+  }
+}

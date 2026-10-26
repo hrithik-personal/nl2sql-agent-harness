@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"sql\": \"SELECT count(orders.id) FROM orders WHERE orders.status = 'returned'\",\n  \"tables_used\": [\"orders\"],\n  \"rationale\": \"The plan requests a count of orders with status 'returned'. This is a straightforward aggregation query filtering the orders table by the status column. No joins or complex logic needed.\"\n}\n```",
+  "usage": {
+    "completion_tokens": 90,
+    "cost_usd": 0.002,
+    "prompt_tokens": 1550,
+    "total_tokens": 1640
+  }
+}

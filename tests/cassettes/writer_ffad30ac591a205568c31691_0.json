@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"sql\": \"SELECT c.state, sum(o.total_amount) AS total_revenue FROM orders o JOIN customers c ON c.id = o.customer_id WHERE o.status = 'delivered' GROUP BY c.state ORDER BY total_revenue DESC\",\n  \"tables_used\": [\"orders\", \"customers\"],\n  \"rationale\": \"Join orders to customers on customer_id to access the state dimension. Filter for delivered orders only. Group by customer state and sum total_amount. Sort by total revenue descending as specified in the plan.\"\n}\n```",
+  "usage": {
+    "completion_tokens": 133,
+    "cost_usd": 0.0024720000000000002,
+    "prompt_tokens": 1807,
+    "total_tokens": 1940
+  }
+}
