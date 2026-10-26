@@ -5,17 +5,17 @@ telemetry never takes down a request. LiteLLM LLM spans are auto-captured via
 OpenInference; we add spans around the non-LLM steps ourselves.
 """
 
-from __future__ import annotations
-
+import atexit
 from functools import lru_cache
 
 from nl2sql.config import get_settings
 
 _INITIALISED = False
+_PROVIDER = None
 
 
 def init_telemetry() -> None:
-    global _INITIALISED
+    global _INITIALISED, _PROVIDER
     if _INITIALISED:
         return
     _INITIALISED = True
@@ -31,6 +31,11 @@ def init_telemetry() -> None:
         exporter = OTLPSpanExporter(endpoint=f"{s.otlp_endpoint}/v1/traces")
         provider.add_span_processor(BatchSpanProcessor(exporter))
         trace.set_tracer_provider(provider)
+        _PROVIDER = provider
+
+        # flush pending spans on process exit (short-lived CLI/eval runs otherwise
+        # drop the last batch before it exports)
+        atexit.register(flush_telemetry)
 
         # auto-instrument LiteLLM calls (per-agent spans with token/cost attrs)
         try:
@@ -41,6 +46,14 @@ def init_telemetry() -> None:
             pass
     except Exception:  # noqa: BLE001 - telemetry must never break the app
         pass
+
+
+def flush_telemetry() -> None:
+    if _PROVIDER is not None:
+        try:
+            _PROVIDER.force_flush()
+        except Exception:  # noqa: BLE001
+            pass
 
 
 @lru_cache

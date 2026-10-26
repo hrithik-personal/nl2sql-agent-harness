@@ -23,6 +23,7 @@ from langgraph.types import Command, RetryPolicy, interrupt
 
 from nl2sql.orchestration.base import Deps, Orchestrator, RunResult
 from nl2sql.schemas import Answer, ExecError, ExecResult, RunState, TraceStep
+from nl2sql.telemetry import tracer
 
 # our Pydantic state round-trips cleanly through the checkpointer; silence the
 # "Deserializing unregistered type" notices for our own schema module
@@ -158,15 +159,43 @@ class LangGraphEngine(Orchestrator):
         return "explain"  # abort or budget exhausted -> graceful low-confidence answer
 
     # --- build / run ---------------------------------------------------- #
+    def _traced(self, name, fn):
+        """Wrap a node so each step is an OTel span (LiteLLM LLM spans nest under it).
+
+        interrupt() raises a control-flow exception to pause the graph; don't mark
+        that span as an error.
+        """
+
+        def wrapper(state: RunState) -> dict:
+            with tracer().start_as_current_span(
+                f"nl2sql.{name}", record_exception=False, set_status_on_exception=False
+            ) as sp:
+                out = fn(state)
+                try:
+                    steps = out.get("trace") or []
+                    if steps:
+                        st = steps[-1]
+                        sp.set_attribute("nl2sql.agent", st.agent)
+                        sp.set_attribute("nl2sql.status", st.status)
+                        if st.tokens:
+                            sp.set_attribute("llm.tokens", st.tokens)
+                        if st.cost_usd:
+                            sp.set_attribute("llm.cost_usd", st.cost_usd)
+                except Exception:  # noqa: BLE001 - annotation is best-effort
+                    pass
+                return out
+
+        return wrapper
+
     def _build(self):
         g = StateGraph(RunState)
-        g.add_node("retrieve", self._retrieve)
+        g.add_node("retrieve", self._traced("retrieve", self._retrieve))
         # LLM nodes get a transient-error RetryPolicy (backoff); execute/retrieve don't
-        g.add_node("plan", self._plan, retry_policy=LLM_RETRY)
-        g.add_node("write", self._write, retry_policy=LLM_RETRY)
-        g.add_node("execute", self._execute)
-        g.add_node("verify", self._verify, retry_policy=LLM_RETRY)
-        g.add_node("explain", self._explain, retry_policy=LLM_RETRY)
+        g.add_node("plan", self._traced("plan", self._plan), retry_policy=LLM_RETRY)
+        g.add_node("write", self._traced("write", self._write), retry_policy=LLM_RETRY)
+        g.add_node("execute", self._traced("execute", self._execute))
+        g.add_node("verify", self._traced("verify", self._verify), retry_policy=LLM_RETRY)
+        g.add_node("explain", self._traced("explain", self._explain), retry_policy=LLM_RETRY)
 
         g.add_edge(START, "retrieve")
         g.add_edge("retrieve", "plan")
@@ -203,7 +232,9 @@ class LangGraphEngine(Orchestrator):
 
         reset_cassette_counters()
         tid = thread_id or uuid.uuid4().hex
-        self.app.invoke(RunState(question=question), self._config(tid))
+        with tracer().start_as_current_span("nl2sql.run") as sp:
+            sp.set_attribute("nl2sql.question", question)
+            self.app.invoke(RunState(question=question), self._config(tid))
         return self._finish(tid)
 
     def resume(self, thread_id: str, answer: str) -> RunResult:
