@@ -407,3 +407,7 @@ store) · **sentence-transformers** (`BAAI/bge-small-en-v1.5` embeddings) · **s
 - **[docs/EVAL.md](docs/EVAL.md)** — how correctness is measured, and an honest analysis of what fails and why.
 - **[docs/FAILURE_MODES.md](docs/FAILURE_MODES.md)** — the catalogue of failure modes and mitigations.
 - **[CLAUDE.md](CLAUDE.md)** — orientation for AI coding agents (and a fast onboarding for humans).
+
+---
+
+Designed and built by **Hrithik Kumar**. Licensed under the [MIT License](LICENSE).
