@@ -14,6 +14,21 @@ for the design rationale.
 
 Package: `nl2sql`. Python 3.11+.
 
+## Documentation map (where to read, by topic)
+
+Prose docs are layered: the README is the tour, and each topic deep-dives in its own file. When you need
+background before changing something, read the matching doc first.
+
+| Topic | Doc |
+|---|---|
+| Project tour, quick start, features | [README.md](README.md) |
+| Production-engineering deep dive — evals-in-CI, model routing & budgets, **how LiteLLM is wired in (proxy/HTTP, not SDK)**, **timeouts & Claude-only fallback**, SQL sandbox, resilience, tool contracts, observability | [docs/ENGINEERING.md](docs/ENGINEERING.md) |
+| How correctness is measured + honest failure analysis | [docs/EVAL.md](docs/EVAL.md) |
+| Catalogue of failure modes and mitigations | [docs/FAILURE_MODES.md](docs/FAILURE_MODES.md) |
+| Full design doc: decisions, trade-offs, architecture | [docs/PLAN.md](docs/PLAN.md) |
+
+Keep this map and the README's section map in sync when you add or move a doc.
+
 ## Architecture map (where to look)
 
 | You want to… | Go to |
@@ -39,7 +54,11 @@ the LangGraph dependency lives only in the orchestration layer, behind the `Orch
 
 1. **One LLM choke point.** Every model call goes through `nl2sql/llm.py` (`complete_structured`). Never
    import `litellm` / an SDK or call a model anywhere else — routing, per-agent keys, cost accounting,
-   structured-output parsing, and the cassette layer all live here and would be bypassed.
+   structured-output parsing, and the cassette layer all live here and would be bypassed. The call uses
+   the litellm SDK only as a **thin HTTP client to the LiteLLM proxy** (`model="litellm_proxy/…"`,
+   `api_base`, per-agent virtual `api_key`); per-key budgets/scoping are a proxy feature, so never switch
+   to the in-process SDK route (calling the provider directly) — it would silently drop budgets and
+   scoping. Timeouts and fallbacks live in `litellm/config.yaml`, not in this file.
 
 2. **Determinism is load-bearing.** The eval suite and tests replay recorded cassettes keyed by a hash of
    `(agent, model, messages, schema)`. Anything that changes a prompt, the schema JSON, the retrieved
@@ -109,8 +128,13 @@ determinism — investigate rather than committing the churn.
 - **Add/change an agent prompt:** edit the agent in `nl2sql/agents/`, then re-record cassettes.
 - **Add a tool:** define its Pydantic input in `nl2sql/tools/contracts.py`, add it to the permission
   matrix in `permissions.py`, then expose it in `api/` and/or `mcp_server/`.
-- **Change model routing:** edit `litellm/config.yaml` (aliases/fallbacks) and, if the real model id
-  changes, `AGENT_REAL_MODEL` in `nl2sql/llm.py` (used for cost estimation). Re-record cassettes.
+- **Change model routing / timeouts / fallbacks:** edit `litellm/config.yaml`. Each deployment carries a
+  per-key `timeout` (Sonnet roles 30s, Haiku 20s). Fallbacks are **Claude-only** (single Anthropic key):
+  Sonnet roles → `claude-haiku-fallback`, Haiku roles → `claude-sonnet-fallback`. If you add/rename a
+  fallback target, also add it to that agent's scoped `models` list in
+  `scripts/provision_litellm_keys.py` (a key can only call models it's scoped to) and re-run
+  `make litellm-keys`. If the real model id changes, update `AGENT_REAL_MODEL` in `nl2sql/llm.py` (cost
+  estimation). Re-record cassettes if prompts/model ids change.
 
 ## Conventions
 
