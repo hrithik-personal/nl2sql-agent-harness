@@ -27,12 +27,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 ENV_PATH = ROOT / ".env"
 
-# (agent, allowed models [primary + its fallback target], 30-day budget USD, env var)
+# (agent, allowed models [primary + its Claude fallback target], 30-day budget USD, env var)
+# The fallback targets mirror litellm/config.yaml: Sonnet roles degrade to Haiku,
+# Haiku roles escalate to Sonnet. A key can only call the models listed here, so
+# the fallback target must be included or the fallback would 401.
 SPECS = [
-    ("planner", ["planner-model", "gpt-4o"], 5.0, "LITELLM_KEY_PLANNER"),
-    ("verifier", ["verifier-model", "gpt-4o"], 5.0, "LITELLM_KEY_VERIFIER"),
-    ("writer", ["writer-model", "gpt-4o-mini"], 2.0, "LITELLM_KEY_WRITER"),
-    ("explainer", ["explainer-model", "gpt-4o-mini"], 2.0, "LITELLM_KEY_EXPLAINER"),
+    ("planner", ["planner-model", "claude-haiku-fallback"], 5.0, "LITELLM_KEY_PLANNER"),
+    ("verifier", ["verifier-model", "claude-haiku-fallback"], 5.0, "LITELLM_KEY_VERIFIER"),
+    ("writer", ["writer-model", "claude-sonnet-fallback"], 2.0, "LITELLM_KEY_WRITER"),
+    ("explainer", ["explainer-model", "claude-sonnet-fallback"], 2.0, "LITELLM_KEY_EXPLAINER"),
 ]
 
 
