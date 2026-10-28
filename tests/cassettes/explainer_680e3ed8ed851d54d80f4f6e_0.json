@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"text\": \"The top 10 best-performing sellers by revenue are led by Nair, Bhalla and Karnik with $12.45M in total revenue, followed by Ahuja-Dutta with $11.30M and Sidhu-Wadhwa with $10.96M. These three sellers significantly outpace the remaining top performers in the list.\",\n  \"confidence\": 0.95,\n  \"chart\": {\n    \"type\": \"bar\",\n    \"x\": \"name\",\n    \"y\": \"total_revenue\"\n  }\n}\n```",
+  "usage": {
+    "completion_tokens": 143,
+    "cost_usd": 0.0013549999999999999,
+    "prompt_tokens": 640,
+    "total_tokens": 783
+  }
+}

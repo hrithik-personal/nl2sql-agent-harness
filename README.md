@@ -88,7 +88,7 @@ so anyone who clones the repo gets the exact same numbers.
 - 🔁 **Resilience / failure handling** — bounded semantic retries, transient-error backoff, **per-key model timeouts**, **cross-tier Claude fallback** (Sonnet↔Haiku), and a documented catalogue of [failure modes](docs/FAILURE_MODES.md) each with a reproducing test.
 - 🧰 **Typed tool contracts + permissions** — every tool has a strict Pydantic input schema and a permission matrix; the dangerous `run_sql` tool is **off by default**.
 - 📊 **Observability** — OpenTelemetry traces → **Arize Phoenix**: one span per agent, LLM token/cost spans nested under each.
-- 🧪 **Deterministic everything** — fixed seeds, `temperature=0`, positional tiebreak ordering, and occurrence-indexed cassettes make runs reproducible.
+- 🧪 **Deterministic everything** — fixed seeds, `temperature=0`, positional tiebreak ordering, occurrence-indexed LLM cassettes, and a **pinned retrieved context** make offline runs byte-identical on any machine (so the eval gate is stable in CI).
 
 **Surfaces**
 - 🌐 **FastAPI** REST API · 🔌 **MCP server** (stdio + Streamable HTTP) · 🖥️ **Streamlit** UI.
@@ -305,6 +305,10 @@ nl2sql-agent-harness/
 - **Cassettes** — recorded LLM exchanges keyed by a hash of `(agent, model, messages, schema)` plus an
   occurrence index (the self-correction loop can issue the same prompt twice in one run). `LLM_MODE`
   switches between `live`, `record`, and `replay`.
+- **Pinned retrieval** — the retrieval step is recorded/replayed too (`tests/cassettes/retrieval/`).
+  Ranking tables by embedding similarity is machine-sensitive, so freezing the retrieved context keeps
+  replay byte-identical across machines — that's what makes the eval gate reliable on CI hardware, with
+  no embedding model needed offline.
 
 ---
 

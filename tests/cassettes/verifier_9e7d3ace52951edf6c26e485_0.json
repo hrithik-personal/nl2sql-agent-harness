@@ -1,9 +1,9 @@
 {
-  "content": "```json\n{\n  \"status\": \"ok\"\n}\n```",
+  "content": "```json\n{\n  \"status\": \"ok\",\n  \"reason\": \"The SQL correctly filters for successful payments (status = 'success'), counts them by payment method, and returns the results grouped by method. The result shows counts for all payment methods (card, wallet, upi, netbanking, cod), which directly answers the question.\"\n}\n```",
   "usage": {
-    "completion_tokens": 19,
-    "cost_usd": 0.001572,
+    "completion_tokens": 81,
+    "cost_usd": 0.002502,
     "prompt_tokens": 429,
-    "total_tokens": 448
+    "total_tokens": 510
   }
 }

@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"text\": \"The Grocery category has the most refunds with 77 refunds.\",\n  \"confidence\": 0.95,\n  \"chart\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 49,
+    "cost_usd": 0.000702,
+    "prompt_tokens": 457,
+    "total_tokens": 506
+  }
+}

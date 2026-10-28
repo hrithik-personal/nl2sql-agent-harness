@@ -22,19 +22,39 @@ jobs:
     env:
       LLM_MODE: replay            # cassettes -> no API key needed in CI
       PIP_INDEX_URL: https://pypi.org/simple/
+      PGPASSWORD: nl2sql_app_pw
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
       - name: install
         run: |
           python -m pip install -e ".[dev]"
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends postgresql-client
+
       - name: lint
         run: ruff check .
+
       - name: unit tests (cassette replay)
         run: pytest -q
-      # The DB-backed eval harness runs once the gold-SQL cassettes are recorded.
-      # Enable by initialising the DB (db/*.sql + seed + index) and uncommenting:
-      # - name: evals (gated)
-      #   run: LLM_MODE=replay EVAL_THRESHOLD=0.7 python -m evals.run_evals
+
+      # ---- the eval gate -------------------------------------------------- #
+      # The eval harness replays cassettes (no API key) and replays a *pinned*
+      # retrieved context (no embedding model / pgvector needed), but it still
+      # EXECUTES the agent's SQL against a seeded DB and compares results, so CI
+      # builds the shop schema + data first. Retrieval being pinned is what makes
+      # this deterministic on CI hardware.
+      - name: initialise database (schema, read-only role, app tables)
+        run: |
+          for f in db/00_init.sql db/01_schema.sql db/02_roles.sql db/03_app.sql; do
+            echo "applying $f"
+            psql -h localhost -U nl2sql_app -d nl2sql -v ON_ERROR_STOP=1 -f "$f"
+          done
+
+      - name: seed deterministic data
+        run: python -m db.seed
+
+      - name: evals (gated on execution-match)
+        run: EVAL_THRESHOLD=0.55 python -m evals.run_evals

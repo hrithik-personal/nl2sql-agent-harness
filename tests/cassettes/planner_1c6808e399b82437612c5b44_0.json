@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"intent\": \"Show total revenue per month for January through June 2026\",\n  \"metrics\": [\n    \"sum(orders.total_amount)\"\n  ],\n  \"dimensions\": [\n    \"month(orders.created_at)\"\n  ],\n  \"filters\": [\n    \"orders.created_at between 2026-01-01 and 2026-06-30\",\n    \"orders.status not in ('cancelled', 'returned')\"\n  ],\n  \"time_range\": \"2026-01-01 to 2026-06-30\",\n  \"sort\": \"month(orders.created_at) ASC\",\n  \"limit\": null,\n  \"tables\": [\n    \"orders\"\n  ],\n  \"needs_clarification\": false,\n  \"clarifying_question\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 202,
+    "cost_usd": 0.0075390000000000006,
+    "prompt_tokens": 1503,
+    "total_tokens": 1705
+  }
+}

@@ -1,9 +1,0 @@
-{
-  "content": "```json\n{\n  \"text\": \"There are 1,095 delivered orders (the largest group), followed by 249 cancelled orders, 244 shipped orders, 157 confirmed orders, 153 returned orders, and 102 placed orders.\",\n  \"confidence\": 0.95,\n  \"chart\": {\n    \"type\": \"bar\",\n    \"x\": \"status\",\n    \"y\": \"count\"\n  }\n}\n```",
-  "usage": {
-    "completion_tokens": 107,
-    "cost_usd": 0.0009519999999999999,
-    "prompt_tokens": 417,
-    "total_tokens": 524
-  }
-}

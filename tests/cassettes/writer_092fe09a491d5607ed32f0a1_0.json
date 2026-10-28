@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"sql\": \"SELECT s.id, s.name, sum(oi.line_total) AS total_revenue FROM order_items oi JOIN orders o ON o.id = oi.order_id JOIN sellers s ON s.id = oi.seller_id WHERE o.status = 'delivered' GROUP BY s.id, s.name ORDER BY total_revenue DESC LIMIT 5\",\n  \"tables_used\": [\"order_items\", \"orders\", \"sellers\"],\n  \"rationale\": \"Query joins order_items to orders to filter for delivered status, then joins to sellers to group by seller dimensions. Aggregates line_total for revenue metric, groups by seller id and name, sorts descending by revenue, and limits to top 5 results.\"\n}\n```",
+  "usage": {
+    "completion_tokens": 182,
+    "cost_usd": 0.002554,
+    "prompt_tokens": 1644,
+    "total_tokens": 1826
+  }
+}
