@@ -1,9 +1,9 @@
 {
-  "content": "```json\n{\n  \"sql\": \"SELECT count(DISTINCT products.category) FROM products\",\n  \"tables_used\": [\"products\"],\n  \"rationale\": \"The plan requests a count of distinct product categories. This is a simple aggregation query that requires only the products table and the category column. No joins, filters, or grouping are needed.\"\n}\n```",
+  "content": "```json\n{\n  \"sql\": \"SELECT count(DISTINCT products.category) FROM products\",\n  \"tables_used\": [\"products\"],\n  \"rationale\": \"The plan requests a count of distinct product categories. This is a simple aggregation query that counts unique values in the category column of the products table. No joins, filters, or grouping are needed.\"\n}\n```",
   "usage": {
-    "completion_tokens": 85,
-    "cost_usd": 0.002162,
+    "completion_tokens": 87,
+    "cost_usd": 0.002172,
     "prompt_tokens": 1737,
-    "total_tokens": 1822
+    "total_tokens": 1824
   }
 }

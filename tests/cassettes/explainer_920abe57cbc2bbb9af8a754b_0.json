@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"text\": \"Total revenue from January through June 2026 ranges from $5.86M (June) to $20.95M (May). January had the highest revenue at $19.68M, followed by May at $20.95M, while February was the lowest at $14.73M among the first five months.\",\n  \"confidence\": 0.95,\n  \"chart\": {\n    \"type\": \"bar\",\n    \"x\": \"month\",\n    \"y\": \"total_revenue\"\n  }\n}\n```",
+  "usage": {
+    "completion_tokens": 130,
+    "cost_usd": 0.001271,
+    "prompt_tokens": 621,
+    "total_tokens": 751
+  }
+}

@@ -1,9 +1,0 @@
-{
-  "content": "```json\n{\n  \"text\": \"Total revenue over the last 6 months ranges from $4.2M (April 2026) to $18.5M (June 2026), with an average of approximately $14.4M per month. May through October 2026 show relatively stable revenue between $13.9M and $18.5M, excluding the notably lower April figure.\",\n  \"confidence\": 0.92,\n  \"chart\": {\n    \"type\": \"bar\",\n    \"x\": \"month\",\n    \"y\": \"total_revenue\"\n  }\n}\n```",
-  "usage": {
-    "completion_tokens": 140,
-    "cost_usd": 0.0013210000000000001,
-    "prompt_tokens": 621,
-    "total_tokens": 761
-  }
-}

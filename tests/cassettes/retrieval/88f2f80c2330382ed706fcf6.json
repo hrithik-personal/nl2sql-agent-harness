@@ -177,76 +177,6 @@
       }
     },
     {
-      "table": "sellers",
-      "columns": [
-        {
-          "name": "id",
-          "type": "INTEGER",
-          "nullable": false
-        },
-        {
-          "name": "name",
-          "type": "TEXT",
-          "nullable": false
-        },
-        {
-          "name": "city",
-          "type": "TEXT",
-          "nullable": true
-        },
-        {
-          "name": "state",
-          "type": "TEXT",
-          "nullable": true
-        },
-        {
-          "name": "country",
-          "type": "TEXT",
-          "nullable": true
-        },
-        {
-          "name": "rating",
-          "type": "NUMERIC(3, 2)",
-          "nullable": true
-        },
-        {
-          "name": "created_at",
-          "type": "TIMESTAMP",
-          "nullable": false
-        }
-      ],
-      "primary_key": [
-        "id"
-      ],
-      "foreign_keys": [],
-      "sample_values": {
-        "name": [
-          "Ahuja-Dutta",
-          "Apte-Contractor",
-          "Bala, Issac and Saini",
-          "Balan Inc",
-          "Batta Inc"
-        ],
-        "city": [
-          "Ahmedabad",
-          "Bengaluru",
-          "Chennai",
-          "Delhi",
-          "Hyderabad"
-        ],
-        "state": [
-          "Delhi",
-          "Gujarat",
-          "Karnataka",
-          "Maharashtra",
-          "Tamil Nadu"
-        ],
-        "country": [
-          "India"
-        ]
-      }
-    },
-    {
       "table": "shipments",
       "columns": [
         {
@@ -369,6 +299,76 @@
           "failed",
           "refunded",
           "success"
+        ]
+      }
+    },
+    {
+      "table": "sellers",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "city",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "state",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "country",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "rating",
+          "type": "NUMERIC(3, 2)",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "nullable": false
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [],
+      "sample_values": {
+        "name": [
+          "Ahuja-Dutta",
+          "Apte-Contractor",
+          "Bala, Issac and Saini",
+          "Balan Inc",
+          "Batta Inc"
+        ],
+        "city": [
+          "Ahmedabad",
+          "Bengaluru",
+          "Chennai",
+          "Delhi",
+          "Hyderabad"
+        ],
+        "state": [
+          "Delhi",
+          "Gujarat",
+          "Karnataka",
+          "Maharashtra",
+          "Tamil Nadu"
+        ],
+        "country": [
+          "India"
         ]
       }
     },

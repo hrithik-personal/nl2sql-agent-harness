@@ -1,9 +1,9 @@
 {
-  "content": "```json\n{\n  \"intent\": \"Count the number of orders grouped by their status\",\n  \"metrics\": [\"count(orders.id)\"],\n  \"dimensions\": [\"orders.status\"],\n  \"filters\": [],\n  \"time_range\": null,\n  \"sort\": null,\n  \"limit\": null,\n  \"tables\": [\"orders\"],\n  \"needs_clarification\": false,\n  \"clarifying_question\": null\n}\n```",
+  "content": "```json\n{\n  \"intent\": \"Count the number of orders grouped by their status\",\n  \"metrics\": [\n    \"count(orders.id)\"\n  ],\n  \"dimensions\": [\n    \"orders.status\"\n  ],\n  \"filters\": [],\n  \"time_range\": null,\n  \"sort\": null,\n  \"limit\": null,\n  \"tables\": [\n    \"orders\"\n  ],\n  \"needs_clarification\": false,\n  \"clarifying_question\": null\n}\n```",
   "usage": {
-    "completion_tokens": 106,
-    "cost_usd": 0.006084,
+    "completion_tokens": 123,
+    "cost_usd": 0.006339,
     "prompt_tokens": 1498,
-    "total_tokens": 1604
+    "total_tokens": 1621
   }
 }

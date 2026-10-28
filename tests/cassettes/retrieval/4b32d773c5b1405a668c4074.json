@@ -1,6 +1,72 @@
 {
   "tables": [
     {
+      "table": "products",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "seller_id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "category",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "price",
+          "type": "NUMERIC(10, 2)",
+          "nullable": false
+        },
+        {
+          "name": "weight_grams",
+          "type": "INTEGER",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "nullable": false
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "column": "seller_id",
+          "ref_table": "sellers",
+          "ref_column": "id"
+        }
+      ],
+      "sample_values": {
+        "name": [
+          "Ab X",
+          "Accusamus Lite",
+          "Accusamus X",
+          "Accusantium X",
+          "Adipisci Lite"
+        ],
+        "category": [
+          "Apparel",
+          "Beauty",
+          "Books",
+          "Electronics",
+          "Grocery"
+        ]
+      }
+    },
+    {
       "table": "sellers",
       "columns": [
         {
@@ -67,72 +133,6 @@
         ],
         "country": [
           "India"
-        ]
-      }
-    },
-    {
-      "table": "products",
-      "columns": [
-        {
-          "name": "id",
-          "type": "INTEGER",
-          "nullable": false
-        },
-        {
-          "name": "seller_id",
-          "type": "INTEGER",
-          "nullable": false
-        },
-        {
-          "name": "name",
-          "type": "TEXT",
-          "nullable": false
-        },
-        {
-          "name": "category",
-          "type": "TEXT",
-          "nullable": false
-        },
-        {
-          "name": "price",
-          "type": "NUMERIC(10, 2)",
-          "nullable": false
-        },
-        {
-          "name": "weight_grams",
-          "type": "INTEGER",
-          "nullable": true
-        },
-        {
-          "name": "created_at",
-          "type": "TIMESTAMP",
-          "nullable": false
-        }
-      ],
-      "primary_key": [
-        "id"
-      ],
-      "foreign_keys": [
-        {
-          "column": "seller_id",
-          "ref_table": "sellers",
-          "ref_column": "id"
-        }
-      ],
-      "sample_values": {
-        "name": [
-          "Ab X",
-          "Accusamus Lite",
-          "Accusamus X",
-          "Accusantium X",
-          "Adipisci Lite"
-        ],
-        "category": [
-          "Apparel",
-          "Beauty",
-          "Books",
-          "Electronics",
-          "Grocery"
         ]
       }
     },
@@ -314,7 +314,7 @@
       }
     },
     {
-      "table": "tracking_events",
+      "table": "refunds",
       "columns": [
         {
           "name": "id",
@@ -322,9 +322,19 @@
           "nullable": false
         },
         {
-          "name": "shipment_id",
+          "name": "order_id",
           "type": "INTEGER",
           "nullable": false
+        },
+        {
+          "name": "amount",
+          "type": "NUMERIC(12, 2)",
+          "nullable": false
+        },
+        {
+          "name": "reason",
+          "type": "TEXT",
+          "nullable": true
         },
         {
           "name": "status",
@@ -332,12 +342,7 @@
           "nullable": false
         },
         {
-          "name": "location",
-          "type": "TEXT",
-          "nullable": true
-        },
-        {
-          "name": "event_time",
+          "name": "created_at",
           "type": "TIMESTAMP",
           "nullable": false
         }
@@ -347,25 +352,23 @@
       ],
       "foreign_keys": [
         {
-          "column": "shipment_id",
-          "ref_table": "shipments",
+          "column": "order_id",
+          "ref_table": "orders",
           "ref_column": "id"
         }
       ],
       "sample_values": {
-        "status": [
-          "delivered",
-          "failed",
-          "in_transit",
-          "out_for_delivery",
-          "picked_up"
+        "reason": [
+          "changed_mind",
+          "damaged",
+          "late",
+          "wrong_item"
         ],
-        "location": [
-          "Ahmedabad",
-          "Bengaluru",
-          "Chennai",
-          "Delhi",
-          "Hyderabad"
+        "status": [
+          "approved",
+          "completed",
+          "rejected",
+          "requested"
         ]
       }
     },
@@ -543,7 +546,7 @@
       }
     },
     {
-      "table": "refunds",
+      "table": "tracking_events",
       "columns": [
         {
           "name": "id",
@@ -551,19 +554,9 @@
           "nullable": false
         },
         {
-          "name": "order_id",
+          "name": "shipment_id",
           "type": "INTEGER",
           "nullable": false
-        },
-        {
-          "name": "amount",
-          "type": "NUMERIC(12, 2)",
-          "nullable": false
-        },
-        {
-          "name": "reason",
-          "type": "TEXT",
-          "nullable": true
         },
         {
           "name": "status",
@@ -571,7 +564,12 @@
           "nullable": false
         },
         {
-          "name": "created_at",
+          "name": "location",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "event_time",
           "type": "TIMESTAMP",
           "nullable": false
         }
@@ -581,23 +579,25 @@
       ],
       "foreign_keys": [
         {
-          "column": "order_id",
-          "ref_table": "orders",
+          "column": "shipment_id",
+          "ref_table": "shipments",
           "ref_column": "id"
         }
       ],
       "sample_values": {
-        "reason": [
-          "changed_mind",
-          "damaged",
-          "late",
-          "wrong_item"
-        ],
         "status": [
-          "approved",
-          "completed",
-          "rejected",
-          "requested"
+          "delivered",
+          "failed",
+          "in_transit",
+          "out_for_delivery",
+          "picked_up"
+        ],
+        "location": [
+          "Ahmedabad",
+          "Bengaluru",
+          "Chennai",
+          "Delhi",
+          "Hyderabad"
         ]
       }
     }

@@ -60,55 +60,6 @@
       }
     },
     {
-      "table": "orders",
-      "columns": [
-        {
-          "name": "id",
-          "type": "INTEGER",
-          "nullable": false
-        },
-        {
-          "name": "customer_id",
-          "type": "INTEGER",
-          "nullable": false
-        },
-        {
-          "name": "status",
-          "type": "TEXT",
-          "nullable": false
-        },
-        {
-          "name": "total_amount",
-          "type": "NUMERIC(12, 2)",
-          "nullable": false
-        },
-        {
-          "name": "created_at",
-          "type": "TIMESTAMP",
-          "nullable": false
-        }
-      ],
-      "primary_key": [
-        "id"
-      ],
-      "foreign_keys": [
-        {
-          "column": "customer_id",
-          "ref_table": "customers",
-          "ref_column": "id"
-        }
-      ],
-      "sample_values": {
-        "status": [
-          "cancelled",
-          "confirmed",
-          "delivered",
-          "placed",
-          "returned"
-        ]
-      }
-    },
-    {
       "table": "products",
       "columns": [
         {
@@ -171,6 +122,55 @@
           "Books",
           "Electronics",
           "Grocery"
+        ]
+      }
+    },
+    {
+      "table": "orders",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "customer_id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "total_amount",
+          "type": "NUMERIC(12, 2)",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "nullable": false
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "column": "customer_id",
+          "ref_table": "customers",
+          "ref_column": "id"
+        }
+      ],
+      "sample_values": {
+        "status": [
+          "cancelled",
+          "confirmed",
+          "delivered",
+          "placed",
+          "returned"
         ]
       }
     },

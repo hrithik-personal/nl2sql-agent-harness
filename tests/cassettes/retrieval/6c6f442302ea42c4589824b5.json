@@ -324,7 +324,7 @@
       }
     },
     {
-      "table": "sellers",
+      "table": "order_items",
       "columns": [
         {
           "name": "id",
@@ -332,66 +332,57 @@
           "nullable": false
         },
         {
-          "name": "name",
-          "type": "TEXT",
+          "name": "order_id",
+          "type": "INTEGER",
           "nullable": false
         },
         {
-          "name": "city",
-          "type": "TEXT",
-          "nullable": true
+          "name": "product_id",
+          "type": "INTEGER",
+          "nullable": false
         },
         {
-          "name": "state",
-          "type": "TEXT",
-          "nullable": true
+          "name": "seller_id",
+          "type": "INTEGER",
+          "nullable": false
         },
         {
-          "name": "country",
-          "type": "TEXT",
-          "nullable": true
+          "name": "quantity",
+          "type": "INTEGER",
+          "nullable": false
         },
         {
-          "name": "rating",
-          "type": "NUMERIC(3, 2)",
-          "nullable": true
+          "name": "unit_price",
+          "type": "NUMERIC(10, 2)",
+          "nullable": false
         },
         {
-          "name": "created_at",
-          "type": "TIMESTAMP",
+          "name": "line_total",
+          "type": "NUMERIC(12, 2)",
           "nullable": false
         }
       ],
       "primary_key": [
         "id"
       ],
-      "foreign_keys": [],
-      "sample_values": {
-        "name": [
-          "Ahuja-Dutta",
-          "Apte-Contractor",
-          "Bala, Issac and Saini",
-          "Balan Inc",
-          "Batta Inc"
-        ],
-        "city": [
-          "Ahmedabad",
-          "Bengaluru",
-          "Chennai",
-          "Delhi",
-          "Hyderabad"
-        ],
-        "state": [
-          "Delhi",
-          "Gujarat",
-          "Karnataka",
-          "Maharashtra",
-          "Tamil Nadu"
-        ],
-        "country": [
-          "India"
-        ]
-      }
+      "foreign_keys": [
+        {
+          "column": "order_id",
+          "ref_table": "orders",
+          "ref_column": "id"
+        },
+        {
+          "column": "product_id",
+          "ref_table": "products",
+          "ref_column": "id"
+        },
+        {
+          "column": "seller_id",
+          "ref_table": "sellers",
+          "ref_column": "id"
+        }
+      ],
+      "sample_values": {}
     },
     {
       "table": "couriers",
@@ -506,67 +497,6 @@
           "India"
         ]
       }
-    },
-    {
-      "table": "order_items",
-      "columns": [
-        {
-          "name": "id",
-          "type": "INTEGER",
-          "nullable": false
-        },
-        {
-          "name": "order_id",
-          "type": "INTEGER",
-          "nullable": false
-        },
-        {
-          "name": "product_id",
-          "type": "INTEGER",
-          "nullable": false
-        },
-        {
-          "name": "seller_id",
-          "type": "INTEGER",
-          "nullable": false
-        },
-        {
-          "name": "quantity",
-          "type": "INTEGER",
-          "nullable": false
-        },
-        {
-          "name": "unit_price",
-          "type": "NUMERIC(10, 2)",
-          "nullable": false
-        },
-        {
-          "name": "line_total",
-          "type": "NUMERIC(12, 2)",
-          "nullable": false
-        }
-      ],
-      "primary_key": [
-        "id"
-      ],
-      "foreign_keys": [
-        {
-          "column": "order_id",
-          "ref_table": "orders",
-          "ref_column": "id"
-        },
-        {
-          "column": "product_id",
-          "ref_table": "products",
-          "ref_column": "id"
-        },
-        {
-          "column": "seller_id",
-          "ref_table": "sellers",
-          "ref_column": "id"
-        }
-      ],
-      "sample_values": {}
     },
     {
       "table": "products",
@@ -690,6 +620,76 @@
           "completed",
           "rejected",
           "requested"
+        ]
+      }
+    },
+    {
+      "table": "sellers",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "city",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "state",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "country",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "rating",
+          "type": "NUMERIC(3, 2)",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "nullable": false
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [],
+      "sample_values": {
+        "name": [
+          "Ahuja-Dutta",
+          "Apte-Contractor",
+          "Bala, Issac and Saini",
+          "Balan Inc",
+          "Batta Inc"
+        ],
+        "city": [
+          "Ahmedabad",
+          "Bengaluru",
+          "Chennai",
+          "Delhi",
+          "Hyderabad"
+        ],
+        "state": [
+          "Delhi",
+          "Gujarat",
+          "Karnataka",
+          "Maharashtra",
+          "Tamil Nadu"
+        ],
+        "country": [
+          "India"
         ]
       }
     }

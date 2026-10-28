@@ -262,15 +262,10 @@
       }
     },
     {
-      "table": "products",
+      "table": "sellers",
       "columns": [
         {
           "name": "id",
-          "type": "INTEGER",
-          "nullable": false
-        },
-        {
-          "name": "seller_id",
           "type": "INTEGER",
           "nullable": false
         },
@@ -280,18 +275,23 @@
           "nullable": false
         },
         {
-          "name": "category",
+          "name": "city",
           "type": "TEXT",
-          "nullable": false
+          "nullable": true
         },
         {
-          "name": "price",
-          "type": "NUMERIC(10, 2)",
-          "nullable": false
+          "name": "state",
+          "type": "TEXT",
+          "nullable": true
         },
         {
-          "name": "weight_grams",
-          "type": "INTEGER",
+          "name": "country",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "rating",
+          "type": "NUMERIC(3, 2)",
           "nullable": true
         },
         {
@@ -303,27 +303,31 @@
       "primary_key": [
         "id"
       ],
-      "foreign_keys": [
-        {
-          "column": "seller_id",
-          "ref_table": "sellers",
-          "ref_column": "id"
-        }
-      ],
+      "foreign_keys": [],
       "sample_values": {
         "name": [
-          "Ab X",
-          "Accusamus Lite",
-          "Accusamus X",
-          "Accusantium X",
-          "Adipisci Lite"
+          "Ahuja-Dutta",
+          "Apte-Contractor",
+          "Bala, Issac and Saini",
+          "Balan Inc",
+          "Batta Inc"
         ],
-        "category": [
-          "Apparel",
-          "Beauty",
-          "Books",
-          "Electronics",
-          "Grocery"
+        "city": [
+          "Ahmedabad",
+          "Bengaluru",
+          "Chennai",
+          "Delhi",
+          "Hyderabad"
+        ],
+        "state": [
+          "Delhi",
+          "Gujarat",
+          "Karnataka",
+          "Maharashtra",
+          "Tamil Nadu"
+        ],
+        "country": [
+          "India"
         ]
       }
     },
@@ -405,6 +409,72 @@
       }
     },
     {
+      "table": "products",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "seller_id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "category",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "price",
+          "type": "NUMERIC(10, 2)",
+          "nullable": false
+        },
+        {
+          "name": "weight_grams",
+          "type": "INTEGER",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "nullable": false
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "column": "seller_id",
+          "ref_table": "sellers",
+          "ref_column": "id"
+        }
+      ],
+      "sample_values": {
+        "name": [
+          "Ab X",
+          "Accusamus Lite",
+          "Accusamus X",
+          "Accusantium X",
+          "Adipisci Lite"
+        ],
+        "category": [
+          "Apparel",
+          "Beauty",
+          "Books",
+          "Electronics",
+          "Grocery"
+        ]
+      }
+    },
+    {
       "table": "refunds",
       "columns": [
         {
@@ -460,76 +530,6 @@
           "completed",
           "rejected",
           "requested"
-        ]
-      }
-    },
-    {
-      "table": "sellers",
-      "columns": [
-        {
-          "name": "id",
-          "type": "INTEGER",
-          "nullable": false
-        },
-        {
-          "name": "name",
-          "type": "TEXT",
-          "nullable": false
-        },
-        {
-          "name": "city",
-          "type": "TEXT",
-          "nullable": true
-        },
-        {
-          "name": "state",
-          "type": "TEXT",
-          "nullable": true
-        },
-        {
-          "name": "country",
-          "type": "TEXT",
-          "nullable": true
-        },
-        {
-          "name": "rating",
-          "type": "NUMERIC(3, 2)",
-          "nullable": true
-        },
-        {
-          "name": "created_at",
-          "type": "TIMESTAMP",
-          "nullable": false
-        }
-      ],
-      "primary_key": [
-        "id"
-      ],
-      "foreign_keys": [],
-      "sample_values": {
-        "name": [
-          "Ahuja-Dutta",
-          "Apte-Contractor",
-          "Bala, Issac and Saini",
-          "Balan Inc",
-          "Batta Inc"
-        ],
-        "city": [
-          "Ahmedabad",
-          "Bengaluru",
-          "Chennai",
-          "Delhi",
-          "Hyderabad"
-        ],
-        "state": [
-          "Delhi",
-          "Gujarat",
-          "Karnataka",
-          "Maharashtra",
-          "Tamil Nadu"
-        ],
-        "country": [
-          "India"
         ]
       }
     },

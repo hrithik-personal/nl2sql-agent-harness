@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"status\": \"retry\",\n  \"critique\": \"The SQL incorrectly counts refunds at the order level rather than the product level. When a refund is joined to an order and then to ALL order_items in that order, it attributes the refund to every product category in that order. This inflates counts for categories that happen to be in orders with other refunded items. The query should join refunds to a refund_items or similar table to identify which specific products were refunded, or verify that the refund applies to the entire order before attributing it to all categories.\",\n  \"reason\": \"The join logic creates a many-to-many relationship between refunds and products through orders, leading to incorrect attribution of refunds to product categories.\"\n}\n```",
+  "usage": {
+    "completion_tokens": 173,
+    "cost_usd": 0.003987,
+    "prompt_tokens": 464,
+    "total_tokens": 637
+  }
+}

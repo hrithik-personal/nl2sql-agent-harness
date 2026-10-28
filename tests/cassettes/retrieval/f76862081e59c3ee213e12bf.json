@@ -219,65 +219,6 @@
       }
     },
     {
-      "table": "payments",
-      "columns": [
-        {
-          "name": "id",
-          "type": "INTEGER",
-          "nullable": false
-        },
-        {
-          "name": "order_id",
-          "type": "INTEGER",
-          "nullable": false
-        },
-        {
-          "name": "method",
-          "type": "TEXT",
-          "nullable": false
-        },
-        {
-          "name": "amount",
-          "type": "NUMERIC(12, 2)",
-          "nullable": false
-        },
-        {
-          "name": "status",
-          "type": "TEXT",
-          "nullable": false
-        },
-        {
-          "name": "paid_at",
-          "type": "TIMESTAMP",
-          "nullable": true
-        }
-      ],
-      "primary_key": [
-        "id"
-      ],
-      "foreign_keys": [
-        {
-          "column": "order_id",
-          "ref_table": "orders",
-          "ref_column": "id"
-        }
-      ],
-      "sample_values": {
-        "method": [
-          "card",
-          "cod",
-          "netbanking",
-          "upi",
-          "wallet"
-        ],
-        "status": [
-          "failed",
-          "refunded",
-          "success"
-        ]
-      }
-    },
-    {
       "table": "refunds",
       "columns": [
         {
@@ -333,6 +274,65 @@
           "completed",
           "rejected",
           "requested"
+        ]
+      }
+    },
+    {
+      "table": "payments",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "order_id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "method",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "amount",
+          "type": "NUMERIC(12, 2)",
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "paid_at",
+          "type": "TIMESTAMP",
+          "nullable": true
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "column": "order_id",
+          "ref_table": "orders",
+          "ref_column": "id"
+        }
+      ],
+      "sample_values": {
+        "method": [
+          "card",
+          "cod",
+          "netbanking",
+          "upi",
+          "wallet"
+        ],
+        "status": [
+          "failed",
+          "refunded",
+          "success"
         ]
       }
     },

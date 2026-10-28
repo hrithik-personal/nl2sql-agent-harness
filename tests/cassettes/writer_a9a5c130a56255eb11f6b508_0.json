@@ -1,9 +1,0 @@
-{
-  "content": "```json\n{\n  \"sql\": \"SELECT count(shipments.id) FROM shipments WHERE shipments.status = 'delivered' AND shipments.delivered_at IS NOT NULL AND shipments.shipped_at IS NOT NULL AND shipments.delivered_at > shipments.shipped_at + (shipments.sla_days || ' days')::interval\",\n  \"tables_used\": [\"shipments\"],\n  \"rationale\": \"The plan requires counting shipments with status 'delivered', non-null delivered_at and shipped_at timestamps, and where delivery occurred after the SLA deadline. All filters are applied to the shipments table directly. The SLA deadline is calculated by adding sla_days (as an interval) to shipped_at, and we check if delivered_at exceeds this threshold.\"\n}\n```",
-  "usage": {
-    "completion_tokens": 185,
-    "cost_usd": 0.0025659999999999997,
-    "prompt_tokens": 1641,
-    "total_tokens": 1826
-  }
-}

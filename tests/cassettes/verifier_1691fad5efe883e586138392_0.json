@@ -1,9 +1,0 @@
-{
-  "content": "```json\n{\n  \"status\": \"ok\"\n}\n```",
-  "usage": {
-    "completion_tokens": 19,
-    "cost_usd": 0.0014819999999999998,
-    "prompt_tokens": 399,
-    "total_tokens": 418
-  }
-}

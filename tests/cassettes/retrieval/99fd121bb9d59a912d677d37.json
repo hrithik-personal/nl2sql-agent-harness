@@ -124,6 +124,43 @@
       }
     },
     {
+      "table": "couriers",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "mode",
+          "type": "TEXT",
+          "nullable": false
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [],
+      "sample_values": {
+        "name": [
+          "BlueDart",
+          "Delhivery",
+          "DTDC",
+          "Ekart",
+          "IndiaPost"
+        ],
+        "mode": [
+          "air",
+          "surface"
+        ]
+      }
+    },
+    {
       "table": "orders",
       "columns": [
         {
@@ -169,43 +206,6 @@
           "delivered",
           "placed",
           "returned"
-        ]
-      }
-    },
-    {
-      "table": "couriers",
-      "columns": [
-        {
-          "name": "id",
-          "type": "INTEGER",
-          "nullable": false
-        },
-        {
-          "name": "name",
-          "type": "TEXT",
-          "nullable": false
-        },
-        {
-          "name": "mode",
-          "type": "TEXT",
-          "nullable": false
-        }
-      ],
-      "primary_key": [
-        "id"
-      ],
-      "foreign_keys": [],
-      "sample_values": {
-        "name": [
-          "BlueDart",
-          "Delhivery",
-          "DTDC",
-          "Ekart",
-          "IndiaPost"
-        ],
-        "mode": [
-          "air",
-          "surface"
         ]
       }
     },
