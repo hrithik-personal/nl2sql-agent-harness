@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"intent\": \"Count the number of orders placed in May 2026\",\n  \"metrics\": [\n    \"count(orders.id)\"\n  ],\n  \"dimensions\": [],\n  \"filters\": [\n    \"orders.created_at between '2026-05-01' and '2026-05-31 23:59:59'\"\n  ],\n  \"time_range\": \"May 2026\",\n  \"sort\": null,\n  \"limit\": null,\n  \"tables\": [\n    \"orders\"\n  ],\n  \"needs_clarification\": false,\n  \"clarifying_question\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 154,
+    "cost_usd": 0.006813,
+    "prompt_tokens": 1501,
+    "total_tokens": 1655
+  }
+}

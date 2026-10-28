@@ -1,0 +1,715 @@
+{
+  "tables": [
+    {
+      "table": "payments",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "order_id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "method",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "amount",
+          "type": "NUMERIC(12, 2)",
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "paid_at",
+          "type": "TIMESTAMP",
+          "nullable": true
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "column": "order_id",
+          "ref_table": "orders",
+          "ref_column": "id"
+        }
+      ],
+      "sample_values": {
+        "method": [
+          "card",
+          "cod",
+          "netbanking",
+          "upi",
+          "wallet"
+        ],
+        "status": [
+          "failed",
+          "refunded",
+          "success"
+        ]
+      }
+    },
+    {
+      "table": "orders",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "customer_id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "total_amount",
+          "type": "NUMERIC(12, 2)",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "nullable": false
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "column": "customer_id",
+          "ref_table": "customers",
+          "ref_column": "id"
+        }
+      ],
+      "sample_values": {
+        "status": [
+          "cancelled",
+          "confirmed",
+          "delivered",
+          "placed",
+          "returned"
+        ]
+      }
+    },
+    {
+      "table": "shipments",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "order_id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "courier_id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "sla_days",
+          "type": "INTEGER",
+          "nullable": true
+        },
+        {
+          "name": "cost",
+          "type": "NUMERIC(10, 2)",
+          "nullable": true
+        },
+        {
+          "name": "shipped_at",
+          "type": "TIMESTAMP",
+          "nullable": true
+        },
+        {
+          "name": "delivered_at",
+          "type": "TIMESTAMP",
+          "nullable": true
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "column": "courier_id",
+          "ref_table": "couriers",
+          "ref_column": "id"
+        },
+        {
+          "column": "order_id",
+          "ref_table": "orders",
+          "ref_column": "id"
+        }
+      ],
+      "sample_values": {
+        "status": [
+          "delivered",
+          "in_transit",
+          "returned"
+        ]
+      }
+    },
+    {
+      "table": "sellers",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "city",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "state",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "country",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "rating",
+          "type": "NUMERIC(3, 2)",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "nullable": false
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [],
+      "sample_values": {
+        "name": [
+          "Ahuja-Dutta",
+          "Apte-Contractor",
+          "Bala, Issac and Saini",
+          "Balan Inc",
+          "Batta Inc"
+        ],
+        "city": [
+          "Ahmedabad",
+          "Bengaluru",
+          "Chennai",
+          "Delhi",
+          "Hyderabad"
+        ],
+        "state": [
+          "Delhi",
+          "Gujarat",
+          "Karnataka",
+          "Maharashtra",
+          "Tamil Nadu"
+        ],
+        "country": [
+          "India"
+        ]
+      }
+    },
+    {
+      "table": "addresses",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "customer_id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "line1",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "city",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "state",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "country",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "pincode",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "type",
+          "type": "TEXT",
+          "nullable": true
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "column": "customer_id",
+          "ref_table": "customers",
+          "ref_column": "id"
+        }
+      ],
+      "sample_values": {
+        "line1": [
+          "002\nMital Road",
+          "00/43\nSavant",
+          "00/528\nDass Zila",
+          "00/543, Krishnamurthy Marg",
+          "009\nDubey Chowk"
+        ],
+        "city": [
+          "Ahmedabad",
+          "Bengaluru",
+          "Chennai",
+          "Delhi",
+          "Hyderabad"
+        ],
+        "state": [
+          "Delhi",
+          "Gujarat",
+          "Karnataka",
+          "Maharashtra",
+          "Tamil Nadu"
+        ],
+        "country": [
+          "India"
+        ],
+        "pincode": [
+          "002842",
+          "009968",
+          "013721",
+          "014363",
+          "016315"
+        ],
+        "type": [
+          "home",
+          "work"
+        ]
+      }
+    },
+    {
+      "table": "refunds",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "order_id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "amount",
+          "type": "NUMERIC(12, 2)",
+          "nullable": false
+        },
+        {
+          "name": "reason",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "nullable": false
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "column": "order_id",
+          "ref_table": "orders",
+          "ref_column": "id"
+        }
+      ],
+      "sample_values": {
+        "reason": [
+          "changed_mind",
+          "damaged",
+          "late",
+          "wrong_item"
+        ],
+        "status": [
+          "approved",
+          "completed",
+          "rejected",
+          "requested"
+        ]
+      }
+    },
+    {
+      "table": "couriers",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "mode",
+          "type": "TEXT",
+          "nullable": false
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [],
+      "sample_values": {
+        "name": [
+          "BlueDart",
+          "Delhivery",
+          "DTDC",
+          "Ekart",
+          "IndiaPost"
+        ],
+        "mode": [
+          "air",
+          "surface"
+        ]
+      }
+    },
+    {
+      "table": "customers",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "email",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "city",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "state",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "country",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "nullable": false
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [],
+      "sample_values": {
+        "name": [
+          "Aachal Basu",
+          "Aadi Banerjee",
+          "Aarini Gulati",
+          "Aarini Suresh",
+          "Aarna Patla"
+        ],
+        "email": [
+          "user100@example.com",
+          "user101@example.com",
+          "user102@example.com",
+          "user103@example.com",
+          "user104@example.com"
+        ],
+        "city": [
+          "Ahmedabad",
+          "Bengaluru",
+          "Chennai",
+          "Delhi",
+          "Hyderabad"
+        ],
+        "state": [
+          "Delhi",
+          "Gujarat",
+          "Karnataka",
+          "Maharashtra",
+          "Tamil Nadu"
+        ],
+        "country": [
+          "India"
+        ]
+      }
+    },
+    {
+      "table": "order_items",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "order_id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "product_id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "seller_id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "quantity",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "unit_price",
+          "type": "NUMERIC(10, 2)",
+          "nullable": false
+        },
+        {
+          "name": "line_total",
+          "type": "NUMERIC(12, 2)",
+          "nullable": false
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "column": "order_id",
+          "ref_table": "orders",
+          "ref_column": "id"
+        },
+        {
+          "column": "product_id",
+          "ref_table": "products",
+          "ref_column": "id"
+        },
+        {
+          "column": "seller_id",
+          "ref_table": "sellers",
+          "ref_column": "id"
+        }
+      ],
+      "sample_values": {}
+    },
+    {
+      "table": "products",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "seller_id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "category",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "price",
+          "type": "NUMERIC(10, 2)",
+          "nullable": false
+        },
+        {
+          "name": "weight_grams",
+          "type": "INTEGER",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP",
+          "nullable": false
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "column": "seller_id",
+          "ref_table": "sellers",
+          "ref_column": "id"
+        }
+      ],
+      "sample_values": {
+        "name": [
+          "Ab X",
+          "Accusamus Lite",
+          "Accusamus X",
+          "Accusantium X",
+          "Adipisci Lite"
+        ],
+        "category": [
+          "Apparel",
+          "Beauty",
+          "Books",
+          "Electronics",
+          "Grocery"
+        ]
+      }
+    },
+    {
+      "table": "tracking_events",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "shipment_id",
+          "type": "INTEGER",
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "TEXT",
+          "nullable": false
+        },
+        {
+          "name": "location",
+          "type": "TEXT",
+          "nullable": true
+        },
+        {
+          "name": "event_time",
+          "type": "TIMESTAMP",
+          "nullable": false
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "foreign_keys": [
+        {
+          "column": "shipment_id",
+          "ref_table": "shipments",
+          "ref_column": "id"
+        }
+      ],
+      "sample_values": {
+        "status": [
+          "delivered",
+          "failed",
+          "in_transit",
+          "out_for_delivery",
+          "picked_up"
+        ],
+        "location": [
+          "Ahmedabad",
+          "Bengaluru",
+          "Chennai",
+          "Delhi",
+          "Hyderabad"
+        ]
+      }
+    }
+  ],
+  "exemplars": [
+    {
+      "question": "Payment method breakdown by number of successful payments",
+      "sql": "SELECT method, count(*) AS n FROM payments WHERE status = 'success' GROUP BY method ORDER BY n DESC"
+    },
+    {
+      "question": "Top 10 sellers by total delivered revenue",
+      "sql": "SELECT s.name, sum(oi.line_total) AS revenue FROM order_items oi JOIN orders o ON o.id = oi.order_id JOIN sellers s ON s.id = oi.seller_id WHERE o.status = 'delivered' GROUP BY s.name ORDER BY revenue DESC LIMIT 10"
+    },
+    {
+      "question": "How many orders were delivered last month?",
+      "sql": "SELECT count(*) FROM orders WHERE status = 'delivered' AND created_at >= date_trunc('month', now()) - interval '1 month' AND created_at < date_trunc('month', now())"
+    },
+    {
+      "question": "List the top 5 customers by number of orders",
+      "sql": "SELECT c.name, count(*) AS orders FROM orders o JOIN customers c ON c.id = o.customer_id GROUP BY c.name ORDER BY orders DESC LIMIT 5"
+    }
+  ]
+}

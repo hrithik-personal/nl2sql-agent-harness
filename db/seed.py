@@ -16,10 +16,15 @@ from faker import Faker
 from nl2sql.config import get_settings
 
 SEED = 42
-# Anchor to seed-time "now" so time-window queries (last 30 days, etc.) return
-# real data. Faker/random stay seeded, so names/categories/amounts are stable;
-# only absolute timestamps float with the seed date.
-NOW = datetime.now(UTC)
+# Fixed reference instant (NOT the wall clock). The eval cassettes capture SQL
+# *results*, so the generated timestamps — and therefore every time-window query
+# result — must be byte-identical on every machine and every date. Using
+# datetime.now() here would reshape the data daily and break cassette replay in
+# CI. Any eval question that needs a "current date" uses an absolute date tied to
+# this constant instead of SQL now(), so results never drift
+# (see the time_window items in evals/dataset.jsonl). Orders span the 365 days
+# ending at this instant.
+NOW = datetime(2026, 6, 15, tzinfo=UTC)
 N_SELLERS = 40
 N_CUSTOMERS = 300
 N_PRODUCTS = 300

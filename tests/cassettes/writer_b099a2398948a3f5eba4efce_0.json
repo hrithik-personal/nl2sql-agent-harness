@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"sql\": \"SELECT count(id) FROM orders WHERE created_at >= '2026-05-01'::timestamp AND created_at < '2026-06-01'::timestamp\",\n  \"tables_used\": [\"orders\"],\n  \"rationale\": \"Count all orders with created_at in May 2026. Using timestamp comparison with the first day of June as the upper bound is cleaner and more reliable than using '23:59:59' string matching.\"\n}\n```",
+  "usage": {
+    "completion_tokens": 116,
+    "cost_usd": 0.002138,
+    "prompt_tokens": 1558,
+    "total_tokens": 1674
+  }
+}

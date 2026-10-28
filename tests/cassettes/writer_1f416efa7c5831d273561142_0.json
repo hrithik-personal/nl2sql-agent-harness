@@ -1,9 +1,0 @@
-{
-  "content": "```json\n{\n  \"sql\": \"SELECT date_trunc('month', created_at) AS month, sum(total_amount) AS total_revenue FROM orders WHERE status NOT IN ('cancelled', 'returned') AND created_at >= current_date - interval '6 months' GROUP BY date_trunc('month', created_at) ORDER BY month LIMIT 100\",\n  \"tables_used\": [\"orders\"],\n  \"rationale\": \"The plan requests total revenue per month for the last 6 months, excluding cancelled and returned orders. Using date_trunc('month', created_at) groups by month and year simultaneously, matching the intent. The WHERE clause filters for the 6-month window and excludes the specified statuses. Results are ordered chronologically by month.\"\n}\n```",
-  "usage": {
-    "completion_tokens": 179,
-    "cost_usd": 0.002521,
-    "prompt_tokens": 1626,
-    "total_tokens": 1805
-  }
-}

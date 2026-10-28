@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"text\": \"197 orders were placed in May 2026.\",\n  \"confidence\": 0.95,\n  \"chart\": null\n}\n```",
+  "usage": {
+    "completion_tokens": 44,
+    "cost_usd": 0.000625,
+    "prompt_tokens": 405,
+    "total_tokens": 449
+  }
+}

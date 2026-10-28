@@ -1,0 +1,9 @@
+{
+  "content": "```json\n{\n  \"status\": \"ok\",\n  \"critique\": \"\",\n  \"reason\": \"The SQL correctly answers the question. It returns total revenue for each month from January through June 2026 (6 rows as expected), excludes cancelled and returned orders as appropriate for revenue calculations, groups by month using date_trunc, and orders chronologically. The result shows reasonable revenue figures for each of the 6 months requested.\"\n}\n```",
+  "usage": {
+    "completion_tokens": 102,
+    "cost_usd": 0.003558,
+    "prompt_tokens": 676,
+    "total_tokens": 778
+  }
+}
