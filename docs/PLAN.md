@@ -1,5 +1,11 @@
 # nl2sql-agent-harness — Multi-agent Text-to-SQL Analytics Agent (plan)
 
+> **This is the original design doc — a record of the plan, not the current-state reference.**
+> Two things were implemented differently from what's written below: the provider fallback is
+> **Claude-only** (cross-tier Sonnet↔Haiku), not Claude→OpenAI (we run with a single Anthropic key),
+> and **per-key model timeouts** were added. For current behaviour see
+> [ENGINEERING.md §4](ENGINEERING.md#4-timeouts--fallback-resilience-at-the-model-layer).
+
 ## Context
 
 Hrithik (Senior Platform Engineer @ MoEngage, 5 yrs) has an **empty public GitHub** and is

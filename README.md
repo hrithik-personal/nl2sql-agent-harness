@@ -32,7 +32,7 @@ enough; each later section drills into one piece.
 | [Quick start](#quick-start) | Copy-paste commands to run the whole thing locally. |
 | [How it works](#how-it-works) | The agent pipeline, step by step. |
 | [Architecture](#architecture) | Components, the data model, and the LangGraph engine. |
-| [The production-engineering story](#the-production-engineering-story) | Deep dives: evals-in-CI, routing & budgets, the SQL sandbox, resilience, observability, tool contracts. |
+| [The production-engineering story](#the-production-engineering-story) | One-line summary of each competency (evals-in-CI, routing & budgets, sandbox, resilience, observability…), linking to the [deep dive](docs/ENGINEERING.md). |
 | [Surfaces](#surfaces-how-you-call-it) | The REST API, MCP server, and Streamlit UI. |
 | [Project layout](#project-layout) | Where everything lives. |
 | [Testing & evaluation](#testing--evaluation) | How correctness is measured and gated. |
@@ -85,7 +85,7 @@ so anyone who clones the repo gets the exact same numbers.
 - ✅ **Evals in CI** — a labelled question set is scored on **execution-match** and gated on a regression threshold in GitHub Actions. Runs **offline and deterministically** via recorded "cassettes" (no API key needed in CI).
 - 🔀 **Model routing + per-agent budgets** — one Anthropic key behind a **LiteLLM** proxy; each agent gets its own **virtual key**, its own **model** (stronger for planning/verifying, cheaper for writing/explaining), and its own **spend budget**, visible in a live dashboard.
 - 🛡️ **Sandboxed SQL executor** — three independent layers (SQL AST guard + read-only transaction + least-privilege DB role) make destructive queries impossible; an `EXPLAIN` cost gate blocks runaway queries.
-- 🔁 **Resilience / failure handling** — bounded semantic retries, transient-error backoff, **provider fallback** (Claude → OpenAI), stage timeouts, and a documented catalogue of [failure modes](docs/FAILURE_MODES.md) each with a reproducing test.
+- 🔁 **Resilience / failure handling** — bounded semantic retries, transient-error backoff, **per-key model timeouts**, **cross-tier Claude fallback** (Sonnet↔Haiku), and a documented catalogue of [failure modes](docs/FAILURE_MODES.md) each with a reproducing test.
 - 🧰 **Typed tool contracts + permissions** — every tool has a strict Pydantic input schema and a permission matrix; the dangerous `run_sql` tool is **off by default**.
 - 📊 **Observability** — OpenTelemetry traces → **Arize Phoenix**: one span per agent, LLM token/cost spans nested under each.
 - 🧪 **Deterministic everything** — fixed seeds, `temperature=0`, positional tiebreak ordering, occurrence-indexed LLM cassettes, and a **pinned retrieved context** make offline runs byte-identical on any machine (so the eval gate is stable in CI).
@@ -236,94 +236,20 @@ test with fakes.
 
 ## The production-engineering story
 
-This is the heart of the project. Each subsection is one competency you'd be expected to demonstrate for
-a production agent, and how it's implemented here.
+This is the heart of the project — the plumbing that makes the agent *operable*. Each item below is one
+competency you'd be expected to demonstrate for a production agent; here's the one-line version, with the
+full deep dive (code, config, and the dashboard screenshots) in **[docs/ENGINEERING.md](docs/ENGINEERING.md)**.
 
-### 1. Evaluation, gated in CI
-
-A manual "looks right to me" is not an eval. Here, a labelled set of questions (`evals/dataset.jsonl`,
-covering simple / join / aggregate / time / ambiguous / **failure** cases) is scored by
-**execution-match**: run the agent's SQL and a gold SQL against the seeded DB and compare the result
-*sets* (order/column-insensitive, float-tolerant). Ambiguous items are scored on behaviour (did it
-clarify / abort?).
-
-The whole suite replays from **cassettes** — recorded LLM exchanges — so it runs **offline,
-deterministically, and with no API key**, and it's **gated on a regression threshold in CI**
-([`.github/workflows/ci.yml`](.github/workflows/ci.yml)). The current honest baseline is **61.1%
-execution-match / 100% valid-SQL**; the misses are mostly defensible interpretation differences against
-a strict gold, analysed candidly in **[docs/EVAL.md](docs/EVAL.md)**.
-
-> The point isn't the headline number — it's that every prompt or model change now produces a
-> **measurable, regression-gated** delta.
-
-### 2. Model routing, budgets & cost awareness
-
-One Anthropic API key sits behind a **LiteLLM** proxy. Each agent authenticates with its own **virtual
-key**, which is **scoped to a single model** and carries a **30-day budget** — so spend is tracked and
-capped *per agent*, and the planner's key literally cannot call the writer's model.
-
-| Agent | Model | Why |
+| Competency | In short | Deep dive |
 |---|---|---|
-| Planner, Verifier | Claude Sonnet | Judgement-heavy: intent, ambiguity, result-sanity |
-| Writer, Explainer | Claude Haiku | Cheaper/faster: SQL authoring, phrasing |
-
-`$/query` is computed from real token usage and surfaced in both the trace and the eval scorecard. A
-Claude → OpenAI **provider fallback** is configured for resilience. It's all visible in the LiteLLM admin
-UI:
-
-<p align="center">
-  <img src="docs/assets/litellm-virtual-keys.png" alt="Per-agent virtual keys, each active, scoped and budgeted" width="420">
-  <img src="docs/assets/litellm-dashboard.png" alt="LiteLLM gateway overview: spend, requests, per-model leaderboard" width="420">
-</p>
-
-### 3. The SQL sandbox (defense in depth)
-
-The agent generates SQL, so the executor assumes the SQL is hostile. **Three independent layers** must
-all agree before a query runs, and any one of them blocks a destructive query on its own:
-
-1. **AST guard** (`sqlguard.py`) — parses with sqlglot and rejects anything that isn't a single `SELECT`:
-   no `INSERT/UPDATE/DELETE/DROP/…`, including **CTE-hidden** DML and **stacked** statements. It also
-   injects a `LIMIT` and a deterministic `ORDER BY`.
-2. **Read-only transaction** — the connection runs with `default_transaction_read_only=on` and a
-   `statement_timeout`.
-3. **Least-privilege role** — queries run as `analyst_ro`, a Postgres role with `SELECT`/`USAGE` only.
-
-A fourth guard, an **`EXPLAIN` cost pre-flight**, rejects queries whose estimated cost exceeds a cap
-(catching accidental cartesian joins) *before* they run. All of this is verified against the live DB and
-covered by unit tests.
-
-### 4. Resilience & failure handling
-
-Different failures are handled by the component best placed to handle them:
-
-- **Semantic failure** (wrong/empty result) → the Verifier's `retry` conditional edge, bounded by a
-  retry budget.
-- **Transient error** (5xx, blip) → LangGraph `RetryPolicy` with backoff.
-- **Provider outage** → LiteLLM **fallback** to a second provider.
-- **Runaway run** → wall-clock budget + `recursion_limit` → graceful low-confidence abort.
-- **Node crash** → the checkpointer has persisted state, so the run is **resumable**; the server and
-  other runs are unaffected.
-
-Every one of these has a named entry and a reproducing case in **[docs/FAILURE_MODES.md](docs/FAILURE_MODES.md)**.
-
-### 5. Typed tool contracts & permissions
-
-Every tool exposed to an agent or an MCP client has a **strict Pydantic input schema** (malformed input
-is rejected, not coerced) and sits under a **permission matrix** ([`nl2sql/tools/`](nl2sql/tools/)).
-`get_schema` and `ask` are safe by default; the raw `run_sql` tool is **off unless explicitly enabled**
-(`ENABLE_RUN_SQL=1`), and returns `403` otherwise.
-
-### 6. Observability
-
-Every live run emits an OpenTelemetry trace to **Arize Phoenix**: a parent `nl2sql.run` span, one span
-per agent node, and LiteLLM `completion` spans (with tokens and cost) nested underneath — so you can see
-the whole waterfall, where time went, and what each step cost.
-
-<p align="center">
-  <img src="docs/assets/phoenix-trace-waterfall.png" alt="Phoenix trace waterfall: the full run with per-agent and LLM spans" width="640">
-</p>
-
-> Traces populate on **live** runs; replay/eval/CI make no LLM calls, so they emit no traces — by design.
+| **Evals, gated in CI** | A labelled set scored on execution-match, replayed from cassettes (offline, no key), gated on a regression threshold in GitHub Actions. Honest baseline: **61.1% exec-match / 100% valid-SQL**. | [§1](docs/ENGINEERING.md#1-evaluation-gated-in-ci) · [EVAL.md](docs/EVAL.md) |
+| **Routing & per-agent budgets** | One Anthropic key behind a LiteLLM proxy; each agent gets its own virtual key, model (Sonnet for judgement, Haiku for authoring), and 30-day budget — a key can't call another agent's model. | [§2](docs/ENGINEERING.md#2-model-routing-budgets--cost-awareness) |
+| **How LiteLLM is wired in** | We run the LiteLLM **proxy server** and call it over HTTP (the `litellm_proxy/` route) — which is what unlocks per-key budgets, not the in-process SDK. | [§3](docs/ENGINEERING.md#3-how-litellm-is-wired-in-sdk-vs-proxy) |
+| **Timeouts & fallback** | Per-key timeouts (Sonnet 30s / Haiku 20s) fail a hang fast; **Claude-only cross-tier fallback** (Sonnet↔Haiku) covers a single model being overloaded. | [§4](docs/ENGINEERING.md#4-timeouts--fallback-resilience-at-the-model-layer) |
+| **SQL sandbox (defense in depth)** | Three independent layers — AST guard (single SELECT, no hidden DML) + read-only transaction + least-privilege `analyst_ro` role — plus an `EXPLAIN` cost gate. | [§5](docs/ENGINEERING.md#5-the-sql-sandbox-defense-in-depth) |
+| **Resilience (whole-run)** | Each failure handled where it belongs: semantic retry, transient-error backoff, graceful low-confidence abort, and resumable runs via the checkpointer. | [§6](docs/ENGINEERING.md#6-resilience--failure-handling-whole-run) · [FAILURE_MODES.md](docs/FAILURE_MODES.md) |
+| **Typed tool contracts & permissions** | Every tool has a strict Pydantic input schema and a permission matrix; the dangerous `run_sql` is off by default (`403`). | [§7](docs/ENGINEERING.md#7-typed-tool-contracts--permissions) |
+| **Observability** | OpenTelemetry → Arize Phoenix: one span per agent, LLM token/cost spans nested underneath — the whole run as a waterfall. | [§8](docs/ENGINEERING.md#8-observability) |
 
 ---
 
@@ -362,7 +288,7 @@ nl2sql-agent-harness/
 ├─ tests/  tests/cassettes/    # unit tests + recorded LLM exchanges
 ├─ litellm/config.yaml         # model routing + fallbacks
 ├─ scripts/                    # provisioning helpers (virtual keys)
-├─ docs/                       # PLAN, EVAL, FAILURE_MODES, screenshots
+├─ docs/                       # ENGINEERING, PLAN, EVAL, FAILURE_MODES, screenshots
 ├─ docker-compose.yml  Makefile  .github/workflows/ci.yml
 └─ CLAUDE.md                   # guide for AI coding agents working in this repo
 ```
@@ -407,6 +333,7 @@ store) · **sentence-transformers** (`BAAI/bge-small-en-v1.5` embeddings) · **s
 
 ## Further reading
 
+- **[docs/ENGINEERING.md](docs/ENGINEERING.md)** — the production-engineering deep dive: evals-in-CI, routing & budgets, how LiteLLM is wired in, timeouts & fallback, the SQL sandbox, resilience, tool contracts, and observability (with the dashboard screenshots).
 - **[docs/PLAN.md](docs/PLAN.md)** — the full design doc: decisions, trade-offs, and the architecture in depth.
 - **[docs/EVAL.md](docs/EVAL.md)** — how correctness is measured, and an honest analysis of what fails and why.
 - **[docs/FAILURE_MODES.md](docs/FAILURE_MODES.md)** — the catalogue of failure modes and mitigations.

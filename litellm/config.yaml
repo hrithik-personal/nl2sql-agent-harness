@@ -1,35 +1,66 @@
 # LiteLLM proxy config.
-# Per-agent model routing: the Planner/Verifier get a stronger model, the
-# Writer/Explainer a cheaper/faster one. Swap model ids for whatever you have
-# access to.
+#
+# Per-agent model routing: the Planner/Verifier get a stronger model (Sonnet),
+# the Writer/Explainer a cheaper/faster one (Haiku). Swap model ids for whatever
+# you have access to.
+#
 # The proxy runs DB-backed (DATABASE_URL in docker-compose.yml), which unlocks
 # the admin UI plus a budgeted, model-scoped virtual key per agent. Mint them
 # with `make litellm-keys`; each key is restricted to its own model alias (+ its
 # fallback target) and carries a 30-day budget, so spend is tracked per agent and
 # a key can't call another agent's model.
+#
+# Two things worth noting below:
+#   * `timeout` is set per deployment. Because each agent's virtual key is scoped
+#     to exactly one primary model, a per-deployment timeout is effectively a
+#     per-key (per-agent) timeout. If a call doesn't return in time, LiteLLM
+#     treats it as a failure and triggers the fallback below.
+#   * Fallbacks are **Claude-only**. We run with a single Anthropic key, so a
+#     GPT fallback would just fail. Instead each role degrades to the *other*
+#     Claude tier (Sonnet<->Haiku), which protects against a single model being
+#     overloaded/rate-limited (HTTP 429/529). A full Anthropic outage would take
+#     all Claude models down together — to survive that you'd add a second
+#     provider key (e.g. OpenAI/Bedrock) and point the fallback at it.
 
 model_list:
+  # --- primary per-agent deployments ---
   - model_name: planner-model
     litellm_params:
       model: anthropic/claude-sonnet-4-5
+      timeout: 30          # seconds; judgement-heavy but short JSON output
   - model_name: verifier-model
     litellm_params:
       model: anthropic/claude-sonnet-4-5
+      timeout: 30
   - model_name: writer-model
     litellm_params:
       model: anthropic/claude-haiku-4-5
+      timeout: 20          # seconds; fast model, small SQL/JSON output
   - model_name: explainer-model
     litellm_params:
       model: anthropic/claude-haiku-4-5
+      timeout: 20
+
+  # --- Claude-only fallback deployments (reached only when a primary fails) ---
+  - model_name: claude-sonnet-fallback
+    litellm_params:
+      model: anthropic/claude-sonnet-4-5
+      timeout: 30
+  - model_name: claude-haiku-fallback
+    litellm_params:
+      model: anthropic/claude-haiku-4-5
+      timeout: 20
 
 litellm_settings:
   drop_params: true
-  # Provider fallback (Claude -> OpenAI) for cascading-failure handling.
+  # Cross-tier Claude fallback for cascading-failure handling: on a primary
+  # failure/timeout, a Sonnet role degrades to Haiku (cheaper, likely available)
+  # and a Haiku role escalates to Sonnet (quality matters more on retry).
   fallbacks:
-    - planner-model: ["gpt-4o"]
-    - verifier-model: ["gpt-4o"]
-    - writer-model: ["gpt-4o-mini"]
-    - explainer-model: ["gpt-4o-mini"]
+    - planner-model: ["claude-haiku-fallback"]
+    - verifier-model: ["claude-haiku-fallback"]
+    - writer-model: ["claude-sonnet-fallback"]
+    - explainer-model: ["claude-sonnet-fallback"]
 
 general_settings:
   master_key: sk-local-master

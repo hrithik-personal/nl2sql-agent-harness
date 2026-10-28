@@ -25,6 +25,8 @@ services:
     command: ["--config", "/app/config.yaml", "--port", "4000"]
     environment:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      # Fallbacks are Claude-only by default; set this (and wire it in
+      # litellm/config.yaml) only if you add OpenAI as a second provider.
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       # DB-backed mode: unlocks the admin UI, virtual keys, per-key budgets and
       # spend tracking. Prisma auto-migrates into the `litellm` database on boot
